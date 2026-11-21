@@ -16,5 +16,7 @@ services:
         value: production
       - key: DATABASE_PATH
         value: /var/data/oferta-radar.sqlite
+      - key: AUTH_SECRET
+        generateValue: true
       - key: FRONTEND_ORIGINS
         value: https://moustasch8-ai.github.io
