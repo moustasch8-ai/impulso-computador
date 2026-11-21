@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: impulso-instagram
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: INSTAGRAM_APP_ID
+        sync: false
+      - key: INSTAGRAM_APP_SECRET
+        sync: false
+      - key: INSTAGRAM_API_VERSION
+        value: v27.0
+      - key: INSTAGRAM_SCOPES
+        value: instagram_business_basic,instagram_business_manage_insights
