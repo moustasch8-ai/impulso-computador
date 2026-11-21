@@ -1,5 +1,8 @@
 # Impulso — versão computador
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/moustasch8-ai/impulso-computador)
+
+
 Aplicativo web para computador, com interface responsiva e painéis de descoberta de criadores, desafios, dicas, perfil, seguidores registrados e sugestões para seguir. A integração OAuth foi preparada para a **Instagram API with Instagram Login** da Meta.
 
 > O projeto é um protótipo local. Os perfis exibidos na área Explorar são dados fictícios para demonstração. A vitrine, os registros de seguidores e os perfis salvos ficam no navegador atual; ainda não existe diretório compartilhado entre usuários.
