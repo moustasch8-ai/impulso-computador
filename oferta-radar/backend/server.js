@@ -15,6 +15,20 @@ if(!publicUser){const result=db.prepare("INSERT INTO users(name,email,password_h
 const publicUserId=publicUser.id;
 app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'"],imgSrc:["'self'","data:"],connectSrc:["'self'"],frameAncestors:["'none'"]}}}));
 app.use(express.json({limit:"24kb"}));
+const allowedOrigins=String(process.env.FRONTEND_ORIGINS||"https://moustasch8-ai.github.io")
+ .split(",").map(value=>value.trim()).filter(Boolean);
+app.use((req,res,next)=>{
+ const origin=req.get("Origin");
+ if(origin&&allowedOrigins.includes(origin)){
+  res.setHeader("Access-Control-Allow-Origin",origin);
+  res.setHeader("Vary","Origin");
+  res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers","Content-Type");
+ }
+ if(req.method==="OPTIONS")return res.sendStatus(204);
+ next();
+});
+app.disable("x-powered-by");
 const clean=(value,max=140)=>String(value||"").trim().slice(0,max);
 const validUrl=value=>{try{const u=new URL(value);return(u.protocol==="https:"||u.protocol==="http:")&&!!u.hostname&&u.hostname.includes(".")&&!u.username&&!u.password;}catch(_){return false;}};
 const publicSubmitLimit=rateLimit({windowMs:60*60*1000,limit:20,standardHeaders:"draft-7",legacyHeaders:false,message:{error:"Limite de envios atingido. Tente novamente mais tarde."}});
