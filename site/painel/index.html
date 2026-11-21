@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0f14" />
+  <meta name="description" content="Impulso — descubra criadores, participe de desafios e desenvolva seu Instagram de forma orgânica." />
+  <title>Impulso — cresça com intenção</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#inicio" aria-label="Impulso início">
+        <span class="brand-mark">i</span><span>impulso<span class="brand-dot">.</span></span>
+      </a>
+      <div class="workspace-label">ESPAÇO DO CRIADOR</div>
+      <nav class="nav-list" aria-label="Navegação principal">
+        <button class="nav-item active" data-page="explorar"><span class="nav-icon">⌕</span><span>Explorar</span><span class="nav-count">04</span></button>
+        <button class="nav-item" data-page="desafios"><span class="nav-icon">✳</span><span>Desafios</span></button>
+        <button class="nav-item" data-page="dicas"><span class="nav-icon">✧</span><span>Dicas</span></button>
+        <button class="nav-item" data-page="perfil"><span class="nav-icon">◉</span><span>Meu perfil</span></button>
+        <button class="nav-item" data-page="seguidores"><span class="nav-icon">♧</span><span>Seguidores</span></button>
+        <button class="nav-item" data-page="sugestoes"><span class="nav-icon">✧</span><span>Sugestões para seguir</span></button>
+        <button class="nav-item" data-page="instagram"><span class="nav-icon">↗</span><span>Instagram</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-card">
+          <div class="side-card-icon">✦</div>
+          <strong>Cresça no seu ritmo</strong>
+          <p>Pequenas ações consistentes constroem comunidades reais.</p>
+          <button class="text-button" data-go="desafios">Ver desafios <span>→</span></button>
+        </div>
+        <div class="sidebar-user">
+          <div class="mini-avatar" id="sidebarAvatar">EU</div>
+          <div class="sidebar-user-copy"><strong id="sidebarHandle">Seu perfil</strong><span>Conta demonstrativa</span></div>
+          <span class="user-menu">···</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumb"><span>Workspace</span><span class="crumb-sep">/</span><strong id="crumbCurrent">Explorar</strong></div>
+        <div class="topbar-actions">
+          <div class="beta-pill"><span></span> BETA</div>
+          <button class="icon-button" id="helpButton" aria-label="Sobre o Impulso" title="Sobre o Impulso">?</button>
+          <button class="top-profile" data-go="perfil"><span class="top-profile-avatar" id="topAvatar">EU</span><span id="topHandle">Meu perfil</span><span class="chevron">⌄</span></button>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="page active" id="page-explorar">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> CRESCIMENTO COM INTENÇÃO</div>
+              <h1>Gente boa conhece<br /><span>gente boa.</span></h1>
+              <p class="lead">Encontre criadores do seu universo e construa conexões de verdade.</p>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+              <div class="hero-spark spark-a">✦</div><div class="hero-spark spark-b">✧</div>
+              <div class="hero-core"><span>i</span></div>
+              <div class="floating-bubble bubble-one">♡</div><div class="floating-bubble bubble-two">↗</div>
+            </div>
+          </div>
+
+          <div class="section-toolbar">
+            <div class="search-wrap"><span class="search-symbol">⌕</span><input id="creatorSearch" type="search" placeholder="Buscar criadores, nichos ou assuntos..." autocomplete="off" /><kbd>⌘ K</kbd></div>
+            <button class="filter-button" id="clearFilters">↺ <span>Limpar filtros</span></button>
+          </div>
+          <div class="category-row" id="categoryFilters" aria-label="Filtrar por categoria"></div>
+
+          <div class="section-heading">
+            <div><div class="eyebrow small">SUA PRÓXIMA CONEXÃO</div><h2>Criadores para conhecer</h2></div>
+            <span class="result-count" id="creatorCount">04 perfis</span>
+          </div>
+          <div class="creator-grid" id="creatorGrid"></div>
+          <div class="disclaimer"><span>ⓘ</span> Os perfis desta demonstração são fictícios. Conecte-se com pessoas reais sempre com respeito e consentimento.</div>
+        </section>
+
+        <section class="page" id="page-desafios">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> PEQUENOS PASSOS, GRANDES IDEIAS</div>
+            <h1>Seu próximo conteúdo<br /><span>começa aqui.</span></h1>
+            <p class="lead">Desafios práticos para criar, conversar e melhorar um pouco a cada dia.</p>
+          </div>
+          <div class="challenge-overview">
+            <div><div class="eyebrow small">SEU PROGRESSO DE HOJE</div><div class="progress-number"><strong id="challengeProgress">0/3</strong><span>desafios concluídos</span></div></div>
+            <div class="progress-area"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><p id="progressMessage">Escolha um desafio e comece por algo simples.</p></div>
+            <div class="progress-medal">✳</div>
+          </div>
+          <div class="section-heading"><div><div class="eyebrow small">COLOQUE EM PRÁTICA</div><h2>Desafios de hoje</h2></div><span class="result-count">Atualizados diariamente</span></div>
+          <div class="challenge-grid" id="challengeGrid"></div>
+          <div class="note-banner"><span class="note-icon">✦</span><div><strong>Não precisa fazer tudo de uma vez.</strong><p>Escolha uma ação que combine com seu tempo e com a sua comunidade.</p></div></div>
+        </section>
+
+        <section class="page" id="page-dicas">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> IDEIAS QUE VIRAM AÇÃO</div>
+            <h1>Aprenda a crescer<br /><span>melhor.</span></h1>
+            <p class="lead">Orientações simples para criar conteúdo útil e fortalecer sua comunidade.</p>
+          </div>
+          <div class="tips-layout">
+            <div><div class="section-heading compact"><div><div class="eyebrow small">GUIA DO CRIADOR</div><h2>Dicas para criadores</h2></div></div><div class="tips-list" id="tipsList"></div></div>
+            <aside class="tip-aside"><div class="tip-aside-mark">✧</div><div class="eyebrow small">LEMBRETE IMPORTANTE</div><h3>Comunidade antes dos números.</h3><p>Não existe fórmula garantida para ganhar seguidores. Foque em conteúdo original, conversas genuínas e consistência.</p><div class="tip-aside-line"></div><span>SEJA AUTÊNTICO. SEJA CONSTANTE.</span></aside>
+          </div>
+        </section>
+
+        <section class="page" id="page-perfil">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> SEU ESPAÇO</div>
+            <h1>Mostre quem<br /><span>você é.</span></h1>
+            <p class="lead">Adicione seu usuário para personalizar sua experiência no Impulso.</p>
+          </div>
+          <div class="profile-layout">
+            <div class="profile-card">
+              <div class="profile-card-top"><div class="profile-avatar" id="profileAvatar">EU</div><div><div class="eyebrow small">SEU PERFIL</div><h2 id="profileDisplayName">Criador em construção</h2><p id="profileDisplayHandle">Adicione seu @ do Instagram</p></div><span class="profile-status">● ATIVO</span></div>
+              <div class="form-divider"></div>
+              <label class="input-label" for="instagramHandle">USUÁRIO DO INSTAGRAM <span>SEM SENHA</span></label>
+              <div class="handle-field"><span>@</span><input id="instagramHandle" type="text" placeholder="seuusuario" maxlength="30" autocomplete="off" /></div>
+              <p class="field-help">Informe apenas seu nome de usuário. Nunca pedimos sua senha do Instagram.</p>
+              <button class="primary-button" id="saveProfile">Salvar meu perfil <span>→</span></button>
+              <p class="privacy-note">Nesta versão, os dados ficam salvos somente neste navegador e neste computador.</p>
+            </div>
+            <div class="stats-column"><div class="stat-card"><div class="stat-icon">♡</div><span>CONEXÕES SALVAS</span><strong id="savedStat">0</strong><small>Perfis que você marcou</small></div><div class="stat-card"><div class="stat-icon">✳</div><span>DESAFIOS FEITOS</span><strong id="completedStat">0</strong><small>Ações concluídas</small></div><div class="stat-card accent-stat"><div class="stat-icon">↗</div><span>SEU PRÓXIMO PASSO</span><strong>Crie</strong><small>Publique algo que ajude alguém hoje.</small></div></div>
+          </div>
+          <section class="promotion-card" aria-labelledby="promotionTitle">
+            <div class="promotion-copy">
+              <div class="eyebrow small">MAIS PESSOAS PODEM TE ENCONTRAR</div>
+              <h2 id="promotionTitle">Deixe seu perfil <span>ser descoberto.</span></h2>
+              <p>Ative sua vitrine no Impulso e compartilhe um convite para outras pessoas conhecerem seu Instagram.</p>
+            </div>
+            <div class="promotion-preview" id="promotionPreview">
+              <div class="promotion-avatar" id="promotionAvatar">EU</div>
+              <div class="promotion-profile-copy"><strong id="promotionHandle">Adicione seu @ do Instagram</strong><span id="promotionVisibility">Sua vitrine está pausada</span></div>
+              <span class="promotion-state" id="promotionState">PAUSADA</span>
+            </div>
+            <div class="promotion-actions">
+              <button class="primary-button" id="togglePromotion">Começar a divulgar meu perfil <span>↗</span></button>
+              <button class="secondary-button" id="shareProfile">Compartilhar convite para seguir</button>
+            </div>
+            <p class="promotion-disclaimer" id="promotionDisclaimer">Nesta versão de demonstração, a vitrine fica registrada apenas neste navegador. Para aparecer na descoberta de outros usuários do Impulso, será necessário publicar o app com um servidor e banco de dados compartilhados. O compartilhamento envia apenas o link público do seu Instagram; não dispara mensagens nem ações automáticas.</p>
+          </section>
+        </section>
+
+        <section class="page" id="page-seguidores">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> CONEXÕES QUE CHEGARAM ATÉ VOCÊ</div>
+            <h1>Quem conheceu<br /><span>seu perfil.</span></h1>
+            <p class="lead">Registre as pessoas que encontraram seu Instagram pelo Impulso e confirmaram que seguiram você.</p>
+          </div>
+          <div class="follower-summary-grid">
+            <article class="follower-summary-card"><span>CONFIRMAÇÕES REGISTRADAS</span><strong id="followerTotal">0</strong><small>Pessoas adicionadas por você</small></article>
+            <article class="follower-summary-card"><span>ÚLTIMA CONFIRMAÇÃO</span><strong id="followerLatest">—</strong><small>Data do registro mais recente</small></article>
+            <article class="follower-summary-card"><span>ORIGEM</span><strong>Impulso</strong><small>Informada no cadastro</small></article>
+          </div>
+          <section class="follower-add-card" aria-labelledby="followerAddTitle">
+            <div class="eyebrow small">NOVO REGISTRO</div>
+            <h2 id="followerAddTitle">Alguém começou a seguir você?</h2>
+            <p>Adicione o @ da pessoa depois que ela confirmar que encontrou seu perfil pelo Impulso e seguiu você.</p>
+            <form id="followerForm" class="follower-form">
+              <label class="input-label" for="followerHandle">USUÁRIO DO INSTAGRAM</label>
+              <div class="follower-input-row"><div class="handle-field"><span>@</span><input id="followerHandle" type="text" placeholder="nomedapessoa" maxlength="30" autocomplete="off" required /></div><button class="primary-button" type="submit">Registrar confirmação <span>＋</span></button></div>
+            </form>
+            <p class="follower-disclaimer">Registro manual: o Instagram não fornece ao Impulso uma lista oficial de quem começou a seguir você por este aplicativo. Esses registros não são verificados pela API e não alteram sua contagem oficial de seguidores.</p>
+          </section>
+          <div class="follower-list-heading"><div><div class="eyebrow small">SEU HISTÓRICO</div><h2>Pessoas registradas</h2></div><span class="result-count" id="followerListCount">0 pessoas</span></div>
+          <div class="follower-list" id="followerList"></div>
+        </section>
+
+        <section class="page" id="page-sugestoes">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> CONEXÕES COM INTERESSES EM COMUM</div>
+            <h1>Boas contas para<br /><span>descobrir.</span></h1>
+            <p class="lead">Encontre criadores e comunidades do seu nicho. Abra as buscas no Instagram e escolha quem realmente combina com você.</p>
+          </div>
+          <div class="suggestion-guidance"><span>✦</span><div><strong>Sugestões por assunto</strong><p>As buscas abaixo levam a publicações públicas por hashtag. Confira o perfil e o conteúdo antes de decidir seguir alguém.</p></div></div>
+          <div class="suggestion-grid" id="suggestionGrid"></div>
+          <p class="suggestion-disclaimer">O Impulso não segue contas automaticamente nem acessa uma lista privada de perfis recomendados pelo Instagram. As sugestões são temas de busca, não recomendações oficiais da Meta.</p>
+        </section>
+
+        <section class="page" id="page-instagram">
+          <div class="page-intro">
+            <div class="eyebrow"><span class="eyebrow-line"></span> DADOS REAIS, DECISÕES MELHORES</div>
+            <h1>Seu Instagram,<br /><span>com estratégia.</span></h1>
+            <p class="lead">Conecte uma conta profissional para acompanhar resultados e descobrir o que merece ser repetido.</p>
+          </div>
+          <div class="ig-connect-card">
+            <div class="ig-connect-brand"><div class="ig-logo">◎</div><div><div class="eyebrow small">CONEXÃO OFICIAL</div><h2 id="igConnectionTitle">Conecte seu Instagram</h2><p id="igConnectionText">A autorização acontece na página do Instagram. O Impulso nunca pede sua senha.</p></div><span class="ig-connection-state" id="igConnectionState">NÃO CONECTADO</span></div>
+            <div class="ig-connect-actions"><button class="primary-button" id="connectInstagram">Conectar com Instagram <span>↗</span></button><button class="secondary-button" id="disconnectInstagram" hidden>Desconectar</button><button class="secondary-button" id="refreshInstagram" hidden>Atualizar métricas ↻</button></div>
+            <p class="ig-notice" id="igNotice">Requer conta profissional do tipo Criador ou Empresa e aprovação das permissões necessárias pela Meta. Nenhuma ação de seguir, curtir ou visualizar será automatizada.</p>
+          </div>
+          <div class="ig-metrics-heading"><div><div class="eyebrow small">VISÃO GERAL DA CONTA</div><h2>Seus resultados</h2></div><span class="result-count" id="igLastUpdated">Aguardando conexão</span></div>
+          <div class="ig-metrics-grid">
+            <article class="ig-metric-card"><span>SEGUIDORES ATUAIS</span><strong id="igFollowers">—</strong><small>Contagem do perfil</small></article>
+            <article class="ig-metric-card"><span>VISUALIZAÇÕES</span><strong id="igViews">—</strong><small>Conteúdo exibido ou reproduzido</small></article>
+            <article class="ig-metric-card"><span>ALCANCE</span><strong id="igReach">—</strong><small>Contas únicas alcançadas</small></article>
+            <article class="ig-metric-card"><span>CONTAS ENGAJADAS</span><strong id="igEngaged">—</strong><small>Contas que interagiram</small></article>
+            <article class="ig-metric-card"><span>INTERAÇÕES</span><strong id="igInteractions">—</strong><small>Interações com o conteúdo</small></article>
+            <article class="ig-metric-card"><span>PUBLICAÇÕES</span><strong id="igMediaCount">—</strong><small>Total no perfil</small></article>
+          </div>
+          <div class="ig-insight-note"><span>✦</span><div><strong>Como usar esses números</strong><p>Compare os resultados ao longo do tempo, identifique formatos que alcançam não seguidores e use os aprendizados para planejar novos conteúdos. Métricas podem demorar até 48 horas para atualizar e algumas não estão disponíveis em contas menores.</p></div></div>
+        </section>
+      </div>
+      <footer class="footer"><span>© 2026 Impulso. Feito para criadores.</span><span>Uma comunidade cresce com conexões reais <b>✦</b></span></footer>
+    </main>
+
+    <aside class="right-rail">
+      <div class="rail-top"><span class="rail-label">SEU PAINEL</span><span class="live-dot"></span></div>
+      <div class="today-card"><div class="today-card-head"><span>✦ FOCO DE HOJE</span><span class="today-date" id="todayDate"></span></div><h3>Uma boa ideia<br />merece ser vista.</h3><p>Compartilhe algo que você aprendeu esta semana. Sua experiência pode ajudar alguém.</p><div class="today-card-footer"><span>LEVE 10 MINUTOS</span><span class="tiny-arrow">↗</span></div></div>
+      <div class="rail-section"><div class="rail-heading"><h3>Seu resumo</h3><span>HOJE</span></div><div class="summary-row"><span class="summary-icon saved-icon">♡</span><div><strong id="railSaved">0</strong><small>conexões salvas</small></div></div><div class="summary-row"><span class="summary-icon done-icon">✓</span><div><strong id="railDone">0 de 3</strong><small>desafios concluídos</small></div></div></div>
+      <div class="rail-section saved-preview-section"><div class="rail-heading"><h3>Perfis salvos</h3><button class="subtle-link" data-go="explorar">Ver todos</button></div><div id="savedPreview" class="saved-preview"><p class="empty-rail">Seus perfis favoritos aparecem aqui.</p></div></div>
+      <div class="rail-quote"><span>“</span><p>O melhor crescimento é aquele que você consegue sustentar.</p><small>UM LEMBRETE DO IMPULSO</small></div>
+      <div class="rail-footer">Sem bots. Sem promessas falsas.<br /><strong>Conexões de verdade.</strong></div>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="aboutModal" aria-hidden="true"><div class="modal"><button class="modal-close" id="closeModal" aria-label="Fechar">×</button><div class="brand-mark modal-brand">i</div><div class="eyebrow small">SOBRE O PROJETO</div><h2>O Impulso ajuda você a crescer com intenção.</h2><p>Este é um protótipo independente. A conexão oficial com Instagram exige configurar um aplicativo Meta e autorizar uma conta profissional. O Impulso não automatiza curtidas, comentários, visualizações ou seguidores.</p><button class="primary-button" id="understoodButton">Entendi <span>✓</span></button></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
