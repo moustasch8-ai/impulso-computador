@@ -1,24 +1,67 @@
 "use strict";
 require("dotenv").config();
-const express=require("express"),session=require("express-session"),SQLiteStore=require("connect-sqlite3")(session),helmet=require("helmet"),rateLimit=require("express-rate-limit"),bcrypt=require("bcryptjs"),Database=require("better-sqlite3"),fs=require("fs"),path=require("path");
-const app=express(),port=Number(process.env.PORT||3000),prod=process.env.NODE_ENV==="production",dbPath=path.resolve(process.env.DATABASE_PATH||path.join(__dirname,"data","oferta-radar.sqlite")),dir=path.dirname(dbPath);
-fs.mkdirSync(dir,{recursive:true});if(!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32)throw Error("Configure SESSION_SECRET com pelo menos 32 caracteres.");if(prod)app.set("trust proxy",1);
-const db=new Database(dbPath);db.pragma("journal_mode=WAL");db.pragma("foreign_keys=ON");
+const express=require("express"),helmet=require("helmet"),rateLimit=require("express-rate-limit"),Database=require("better-sqlite3"),fs=require("fs"),path=require("path");
+const app=express(),port=Number(process.env.PORT||3000),prod=process.env.NODE_ENV==="production";
+const dbPath=path.resolve(process.env.DATABASE_PATH||path.join(__dirname,"data","oferta-radar.sqlite")),dataDir=path.dirname(dbPath);
+fs.mkdirSync(dataDir,{recursive:true});
+if(prod)app.set("trust proxy",1);
+const db=new Database(dbPath);
+db.pragma("journal_mode=WAL");
+db.pragma("foreign_keys=ON");
 db.exec("CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,name TEXT NOT NULL,email TEXT NOT NULL UNIQUE COLLATE NOCASE,password_hash TEXT NOT NULL);CREATE TABLE IF NOT EXISTS offers(id INTEGER PRIMARY KEY,owner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,name TEXT NOT NULL,store TEXT NOT NULL,category TEXT NOT NULL,old_price REAL NOT NULL,price REAL NOT NULL,coupon TEXT,destination_url TEXT NOT NULL,affiliate_url TEXT,expires_at TEXT,clicks INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);CREATE TABLE IF NOT EXISTS affiliate_links(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,store TEXT NOT NULL,name TEXT NOT NULL,url TEXT NOT NULL,clicks INTEGER NOT NULL DEFAULT 0);CREATE TABLE IF NOT EXISTS commissions(id INTEGER PRIMARY KEY,user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,store TEXT NOT NULL,amount REAL NOT NULL,status TEXT NOT NULL,reference TEXT,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);");
-app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'"],imgSrc:["'self'","data:"],connectSrc:["'self'"],frameAncestors:["'none'"]}}}));app.use(express.json({limit:"24kb"}));app.use(session({name:"ofertaradar.sid",store:new SQLiteStore({db:"sessions.sqlite",dir}),secret:process.env.SESSION_SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,secure:prod,sameSite:"lax",maxAge:604800000}}));
-const limit=rateLimit({windowMs:900000,limit:10,standardHeaders:"draft-7",legacyHeaders:false}),user=req=>req.session&&req.session.user,clean=(x,n=140)=>String(x||"").trim().slice(0,n),validUrl=x=>{try{const u=new URL(x);return u.protocol==="https:"||u.protocol==="http:";}catch(_){return false;}},auth=(req,res,next)=>user(req)?next():res.status(401).json({error:"Entre na sua conta para continuar."});
-app.get("/api/health",(q,s)=>s.json({ok:true,service:"oferta-radar"}));app.get("/api/me",auth,(q,s)=>s.json({user:user(q)}));
-app.post("/api/auth/register",limit,async(q,s)=>{const name=clean(q.body.name,80),email=clean(q.body.email,190).toLowerCase(),pw=String(q.body.password||"");if(name.length<2||!(email.indexOf("@")>0&&email.lastIndexOf(".")>email.indexOf("@")+1&&email.indexOf(" ")<0))return s.status(400).json({error:"Informe nome e e-mail válidos."});if(pw.length<10||Buffer.byteLength(pw)>72)return s.status(400).json({error:"A senha deve ter de 10 a 72 bytes."});try{const hash=await bcrypt.hash(pw,12),id=db.prepare("INSERT INTO users(name,email,password_hash) VALUES(?,?,?)").run(name,email,hash).lastInsertRowid;q.session.user={id,name,email};s.status(201).json({user:q.session.user});}catch(e){if(String(e.code).includes("CONSTRAINT"))return s.status(409).json({error:"Este e-mail já possui cadastro."});s.status(500).json({error:"Não foi possível criar a conta."});}});
-app.post("/api/auth/login",limit,async(q,s)=>{const email=clean(q.body.email,190).toLowerCase(),pw=String(q.body.password||""),r=db.prepare("SELECT id,name,email,password_hash FROM users WHERE email=?").get(email);if(!r||!(await bcrypt.compare(pw,r.password_hash)))return s.status(401).json({error:"E-mail ou senha incorretos."});q.session.regenerate(e=>{if(e)return s.status(500).json({error:"Falha ao iniciar sessão."});q.session.user={id:r.id,name:r.name,email:r.email};q.session.save(()=>s.json({user:q.session.user}));});});
-app.post("/api/auth/logout",(q,s)=>q.session.destroy(()=>{s.clearCookie("ofertaradar.sid",{httpOnly:true,secure:prod,sameSite:"lax"});s.json({ok:true});}));
-app.get("/api/offers",(q,s)=>{const rows=db.prepare("SELECT id,name,store,category,old_price,price,coupon,expires_at,created_at,clicks FROM offers WHERE expires_at IS NULL OR expires_at='' OR expires_at>=date('now') ORDER BY id DESC LIMIT 250").all();s.json({offers:rows});});
-app.post("/api/offers",auth,(q,s)=>{const b=q.body,name=clean(b.name),store=clean(b.store,60),category=clean(b.category,40),old=Number(b.old_price),price=Number(b.price),dest=clean(b.destination_url,1000),aff=clean(b.affiliate_url,1000),coupon=clean(b.coupon,40),expiry=clean(b.expires_at,10)||null,cats=["Eletrônicos","Casa","Moda","Beleza","Games","Esporte","Outros"];if(name.length<3||store.length<2||!cats.includes(category))return s.status(400).json({error:"Confira nome, loja e categoria."});if(!Number.isFinite(old)||!Number.isFinite(price)||old<=0||price<=0||price>=old)return s.status(400).json({error:"O preço promocional deve ser menor que o preço anterior."});if(!validUrl(dest)||(aff&&!validUrl(aff)))return s.status(400).json({error:"Informe URLs HTTP/HTTPS válidas."});if(expiry&&(expiry.length!==10||Number.isNaN(Date.parse(expiry))))return s.status(400).json({error:"Data inválida."});const id=db.prepare("INSERT INTO offers(owner_id,name,store,category,old_price,price,coupon,destination_url,affiliate_url,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?)").run(user(q).id,name,store,category,old,price,coupon,dest,aff||null,expiry).lastInsertRowid;s.status(201).json({id});});
-app.get("/go/:id",(q,s)=>{const r=db.prepare("SELECT id,destination_url,affiliate_url FROM offers WHERE id=?").get(q.params.id);if(!r)return s.status(404).send("Oferta não encontrada.");db.prepare("UPDATE offers SET clicks=clicks+1 WHERE id=?").run(r.id);s.redirect(302,r.affiliate_url||r.destination_url);});
-app.get("/api/affiliate-links",auth,(q,s)=>s.json({links:db.prepare("SELECT id,store,name,url,clicks FROM affiliate_links WHERE user_id=? ORDER BY id DESC").all(user(q).id)}));
-app.post("/api/affiliate-links",auth,(q,s)=>{const store=clean(q.body.store,60),name=clean(q.body.name,90),url=clean(q.body.url,1500);if(store.length<2||name.length<2||!validUrl(url))return s.status(400).json({error:"Informe loja, nome e link HTTP/HTTPS válido."});const id=db.prepare("INSERT INTO affiliate_links(user_id,store,name,url) VALUES(?,?,?,?)").run(user(q).id,store,name,url).lastInsertRowid;s.status(201).json({id});});
-app.delete("/api/affiliate-links/:id",auth,(q,s)=>{const r=db.prepare("DELETE FROM affiliate_links WHERE id=? AND user_id=?").run(q.params.id,user(q).id);if(!r.changes)return s.status(404).json({error:"Link não encontrado."});s.json({ok:true});});
-app.get("/r/:id",(q,s)=>{const r=db.prepare("SELECT id,url FROM affiliate_links WHERE id=?").get(q.params.id);if(!r)return s.status(404).send("Link não encontrado.");db.prepare("UPDATE affiliate_links SET clicks=clicks+1 WHERE id=?").run(r.id);s.redirect(302,r.url);});
-app.get("/api/commissions",auth,(q,s)=>s.json({commissions:db.prepare("SELECT id,store,amount,status,reference,created_at FROM commissions WHERE user_id=? ORDER BY id DESC").all(user(q).id)}));
-app.post("/api/commissions",auth,(q,s)=>{const store=clean(q.body.store,60),amount=Number(q.body.amount),status=String(q.body.status||"pending"),reference=clean(q.body.reference,80);if(store.length<2||!Number.isFinite(amount)||amount<=0||amount>1000000||!["pending","approved","paid"].includes(status))return s.status(400).json({error:"Confira loja, valor e status."});const id=db.prepare("INSERT INTO commissions(user_id,store,amount,status,reference) VALUES(?,?,?,?,?)").run(user(q).id,store,amount,status,reference).lastInsertRowid;s.status(201).json({id});});
-app.get("/api/stats",auth,(q,s)=>{const id=user(q).id,clicks=db.prepare("SELECT COALESCE(SUM(clicks),0) n FROM affiliate_links WHERE user_id=?").get(id).n+db.prepare("SELECT COALESCE(SUM(clicks),0) n FROM offers WHERE owner_id=?").get(id).n;const totals=db.prepare("SELECT status,COALESCE(SUM(amount),0) amount FROM commissions WHERE user_id=? GROUP BY status").all(id);const sum=k=>(totals.find(x=>x.status===k)||{}).amount||0;s.json({clicks,pending:sum("pending"),approved:sum("approved"),paid:sum("paid"),total:sum("pending")+sum("approved")+sum("paid")});});
-app.use(express.static(path.resolve(__dirname,".."),{index:"index.html"}));app.get("*",(q,s,n)=>q.path.startsWith("/api/")||q.path.startsWith("/go/")||q.path.startsWith("/r/")?n():s.sendFile(path.resolve(__dirname,"..","index.html")));app.use((e,q,s,n)=>{console.error(e.message);if(!s.headersSent)s.status(500).json({error:"Erro interno do servidor."});});app.listen(port,()=>console.log("Oferta Radar rodando na porta "+port));
+const publicUserEmail="public-submissions@ofertaradar.invalid";
+let publicUser=db.prepare("SELECT id FROM users WHERE email=?").get(publicUserEmail);
+if(!publicUser){const result=db.prepare("INSERT INTO users(name,email,password_hash) VALUES(?,?,?)").run("Envios públicos do Oferta Radar",publicUserEmail,"!no-password-login!");publicUser={id:result.lastInsertRowid};}
+const publicUserId=publicUser.id;
+app.use(helmet({contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'"],imgSrc:["'self'","data:"],connectSrc:["'self'"],frameAncestors:["'none'"]}}}));
+app.use(express.json({limit:"24kb"}));
+const clean=(value,max=140)=>String(value||"").trim().slice(0,max);
+const validUrl=value=>{try{const u=new URL(value);return(u.protocol==="https:"||u.protocol==="http:")&&!!u.hostname&&u.hostname.includes(".")&&!u.username&&!u.password;}catch(_){return false;}};
+const publicSubmitLimit=rateLimit({windowMs:60*60*1000,limit:20,standardHeaders:"draft-7",legacyHeaders:false,message:{error:"Limite de envios atingido. Tente novamente mais tarde."}});
+const categories=["Eletrônicos","Casa","Moda","Beleza","Games","Esporte","Outros"];
+app.get("/api/health",(req,res)=>res.json({ok:true,service:"oferta-radar",registrationRequired:false}));
+app.get("/api/offers",(req,res)=>{
+ const offers=db.prepare("SELECT id,name,store,category,old_price,price,coupon,expires_at,created_at,clicks FROM offers WHERE expires_at IS NULL OR expires_at='' OR expires_at>=date('now') ORDER BY id DESC LIMIT 250").all();
+ res.json({offers});
+});
+app.post("/api/offers",publicSubmitLimit,(req,res)=>{
+ const b=req.body||{},name=clean(b.name),store=clean(b.store,60),category=clean(b.category,40);
+ const old=Number(b.old_price),price=Number(b.price),destination=clean(b.destination_url,1500),affiliate=clean(b.affiliate_url,1500),coupon=clean(b.coupon,40),expiry=clean(b.expires_at,10)||null;
+ if(name.length<3||store.length<2||!categories.includes(category))return res.status(400).json({error:"Confira o nome, a loja e a categoria."});
+ if(!Number.isFinite(old)||!Number.isFinite(price)||old<=0||price<=0||price>=old)return res.status(400).json({error:"O preço promocional deve ser menor que o preço anterior."});
+ if(!validUrl(destination)||(affiliate&&!validUrl(affiliate)))return res.status(400).json({error:"Informe links válidos começando com http:// ou https://."});
+ if(expiry&&(expiry.length!==10||Number.isNaN(Date.parse(expiry))))return res.status(400).json({error:"Data de validade inválida."});
+ const id=db.prepare("INSERT INTO offers(owner_id,name,store,category,old_price,price,coupon,destination_url,affiliate_url,expires_at) VALUES(?,?,?,?,?,?,?,?,?,?)").run(publicUserId,name,store,category,old,price,coupon,destination,affiliate||null,expiry).lastInsertRowid;
+ res.status(201).json({id,message:"Oferta publicada no catálogo compartilhado."});
+});
+app.get("/go/:id",(req,res)=>{
+ const offer=db.prepare("SELECT id,destination_url,affiliate_url FROM offers WHERE id=?").get(req.params.id);
+ if(!offer)return res.status(404).send("Oferta não encontrada.");
+ db.prepare("UPDATE offers SET clicks=clicks+1 WHERE id=?").run(offer.id);
+ res.redirect(302,offer.affiliate_url||offer.destination_url);
+});
+app.get("/api/affiliate-links",(req,res)=>{
+ const links=db.prepare("SELECT id,store,name,url,clicks FROM affiliate_links ORDER BY id DESC LIMIT 500").all();
+ res.json({links});
+});
+app.post("/api/affiliate-links",publicSubmitLimit,(req,res)=>{
+ const store=clean(req.body&&req.body.store,60),name=clean(req.body&&req.body.name,90),url=clean(req.body&&req.body.url,1500);
+ if(store.length<2||name.length<2||!validUrl(url))return res.status(400).json({error:"Informe loja, nome e link válido HTTP/HTTPS."});
+ const id=db.prepare("INSERT INTO affiliate_links(user_id,store,name,url) VALUES(?,?,?,?)").run(publicUserId,store,name,url).lastInsertRowid;
+ res.status(201).json({id,message:"Link adicionado ao mural público."});
+});
+app.get("/r/:id",(req,res)=>{
+ const link=db.prepare("SELECT id,url FROM affiliate_links WHERE id=?").get(req.params.id);
+ if(!link)return res.status(404).send("Link não encontrado.");
+ db.prepare("UPDATE affiliate_links SET clicks=clicks+1 WHERE id=?").run(link.id);
+ res.redirect(302,link.url);
+});
+app.get("/api/stats",(req,res)=>{
+ const offerStats=db.prepare("SELECT COUNT(*) AS count,COALESCE(SUM(clicks),0) AS clicks FROM offers WHERE expires_at IS NULL OR expires_at='' OR expires_at>=date('now')").get();
+ const linkStats=db.prepare("SELECT COUNT(*) AS count,COALESCE(SUM(clicks),0) AS clicks FROM affiliate_links").get();
+ res.json({offers:offerStats.count,offerClicks:offerStats.clicks,links:linkStats.count,linkClicks:linkStats.clicks,clicks:offerStats.clicks+linkStats.clicks});
+});
+app.use(express.static(path.resolve(__dirname,".."),{index:"index.html"}));
+app.get("*",(req,res,next)=>req.path.startsWith("/api/")||req.path.startsWith("/go/")||req.path.startsWith("/r/")?next():res.sendFile(path.resolve(__dirname,"..","index.html")));
+app.use((err,req,res,next)=>{console.error(err.message);if(!res.headersSent)res.status(500).json({error:"Erro interno do servidor."});});
+app.listen(port,()=>console.log("Oferta Radar público rodando na porta "+port));
