@@ -1,479 +1,220 @@
 (() => {
 "use strict";
-
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const API_BASE = String(window.OFERTA_RADAR_API_URL || "").replace(/\/+$/, "");
-const STORAGE = {
-  offers: "ofertaRadar.offers.v2",
-  links: "ofertaRadar.links.v2",
-  clicks: "ofertaRadar.clicks.v2"
-};
+const TOKEN_KEY = "ofertaRadar.authToken.v1";
+const STORAGE = { offers:"ofertaRadar.offers.v2", clicks:"ofertaRadar.clicks.v2" };
 const state = {
-  offers: [],
-  links: [],
-  apiOnline: false,
-  demo: false,
-  page: "ofertas",
-  stats: { clicks: 0, offers: 0, links: 0, offerClicks: 0, linkClicks: 0 }
+  user:null, mode:"login", pendingPage:"links", page:"ofertas",
+  offers:[], links:[], commissions:[], apiOnline:false, demo:false,
+  stats:{ clicks:0, offers:0, links:0, pending:0, approved:0, paid:0 }
 };
-
 const demoOffers = [
-  { id:"demo-1", name:"Fone Bluetooth sem fio", store:"Loja exemplo", category:"Eletrônicos", old_price:199.90, price:129.90, coupon:"RADAR10", icon:"🎧", sample:true, created_at:"2026-11-21" },
-  { id:"demo-2", name:"Luminária de mesa LED", store:"Casa exemplo", category:"Casa", old_price:89.90, price:59.90, icon:"💡", sample:true, created_at:"2026-11-20" },
-  { id:"demo-3", name:"Mochila para notebook", store:"Moda exemplo", category:"Moda", old_price:159.90, price:99.90, icon:"🎒", sample:true, created_at:"2026-11-19" },
-  { id:"demo-4", name:"Kit cuidados pessoais", store:"Beleza exemplo", category:"Beleza", old_price:119.90, price:74.90, icon:"🧴", sample:true, created_at:"2026-11-18" },
-  { id:"demo-5", name:"Controle para jogos", store:"Games exemplo", category:"Games", old_price:249.90, price:179.90, icon:"🎮", sample:true, created_at:"2026-11-17" },
-  { id:"demo-6", name:"Garrafa térmica 1L", store:"Esporte exemplo", category:"Esporte", old_price:79.90, price:49.90, icon:"🥤", sample:true, created_at:"2026-11-16" }
+ {id:"demo-1",name:"Fone Bluetooth sem fio",store:"Loja exemplo",category:"Eletrônicos",old_price:199.9,price:129.9,coupon:"RADAR10",icon:"🎧",sample:true,created_at:"2026-11-21"},
+ {id:"demo-2",name:"Luminária de mesa LED",store:"Casa exemplo",category:"Casa",old_price:89.9,price:59.9,icon:"💡",sample:true,created_at:"2026-11-20"},
+ {id:"demo-3",name:"Mochila para notebook",store:"Moda exemplo",category:"Moda",old_price:159.9,price:99.9,icon:"🎒",sample:true,created_at:"2026-11-19"},
+ {id:"demo-4",name:"Kit cuidados pessoais",store:"Beleza exemplo",category:"Beleza",old_price:119.9,price:74.9,icon:"🧴",sample:true,created_at:"2026-11-18"},
+ {id:"demo-5",name:"Controle para jogos",store:"Games exemplo",category:"Games",old_price:249.9,price:179.9,icon:"🎮",sample:true,created_at:"2026-11-17"},
+ {id:"demo-6",name:"Garrafa térmica 1L",store:"Esporte exemplo",category:"Esporte",old_price:79.9,price:49.9,icon:"🥤",sample:true,created_at:"2026-11-16"}
 ];
-
-const money = value => Number(value || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
-const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, char => ({
-  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-}[char]));
-
-function toast(message, error = false) {
-  const element = $("#toast");
-  element.textContent = message;
-  element.classList.toggle("error", error);
-  element.classList.add("show");
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => element.classList.remove("show"), 3600);
+const money = n => Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(message,error=false){const el=$("#toast");el.textContent=message;el.classList.toggle("error",error);el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),3600);}
+function apiUrl(path){return API_BASE+path;}
+async function api(path,options={}){
+ const headers={"Content-Type":"application/json",...(options.headers||{})};
+ const token=localStorage.getItem(TOKEN_KEY);
+ if(token)headers.Authorization="Bearer "+token;
+ let response;
+ try{response=await fetch(apiUrl(path),{...options,headers});}
+ catch(_){throw new Error("Não foi possível conectar ao servidor do Oferta Radar.");}
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok){const error=new Error(data.error||"Não foi possível concluir a solicitação.");error.status=response.status;throw error;}
+ return data;
 }
-
-function localRead(key) {
-  try {
-    const value = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch (_) {
-    return [];
-  }
+function localRead(key){try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[];}catch(_){return [];}}
+function localWrite(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){toast("Não foi possível salvar neste navegador.",true);return false;}}
+function isValidWebLink(value){try{const url=new URL(String(value).trim());return(url.protocol==="http:"||url.protocol==="https:")&&!!url.hostname&&url.hostname.includes(".")&&!url.username&&!url.password;}catch(_){return false;}}
+function discount(offer){const old=Number(offer.old_price),price=Number(offer.price);return old>price&&old>0?Math.round((1-price/old)*100):0;}
+function setDataStatus(){
+ const status=$("#publicAccessStatus");
+ if(status){status.textContent=state.user?"● Olá, "+state.user.name:"● Vitrine pública · conta gratuita";status.title=state.user?"Você está conectado à sua conta.":"Entre ou crie uma conta para acessar suas ferramentas pessoais.";}
+ const button=$("#accountButton");
+ if(button){button.textContent=state.user?"Sair":"Entrar";button.title=state.user?"Encerrar sessão":"Entrar ou criar conta";}
 }
-
-function localWrite(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
-  } catch (_) {
-    toast("O navegador não conseguiu salvar os dados. Verifique o espaço disponível.", true);
-    return false;
-  }
+function authUI(){
+ const logged=!!state.user;
+ $("#linksLocked").classList.toggle("hidden",logged);
+ $("#linksContent").classList.toggle("hidden",!logged);
+ $("#publishLocked").classList.toggle("hidden",logged);
+ $("#offerForm").classList.toggle("hidden",!logged);
+ $("#salesLocked").classList.toggle("hidden",logged);
+ $("#salesContent").classList.toggle("hidden",!logged);
+ setDataStatus();
 }
-
-function apiUrl(path) {
-  return API_BASE + path;
+function authMode(mode){
+ state.mode=mode;
+ const signup=mode==="signup";
+ $("#nameWrap").classList.toggle("hidden",!signup);
+ $("#authName").required=signup;
+ $("#authPassword").autocomplete=signup?"new-password":"current-password";
+ $("#authTitle").textContent=signup?"Crie sua conta":"Entre na sua conta";
+ $("#authDesc").textContent=signup?"Cadastre-se gratuitamente para guardar seus links, publicar ofertas e ver seus resultados.":"Acesse seus links, publicações e resultados.";
+ $("#authSubmit").textContent=signup?"Criar conta grátis →":"Entrar →";
+ $("#switchText").textContent=signup?"Já tem uma conta?":"Ainda não tem conta?";
+ $("#switchMode").textContent=signup?"Entrar":"Criar cadastro";
+ $("#authMessage").textContent=API_BASE?"":"O acesso por conta será ativado quando o servidor do site for publicado.";
 }
-
-async function api(path, options = {}) {
-  const response = await fetch(apiUrl(path), {
-    ...options,
-    headers: { "Content-Type":"application/json", ...(options.headers || {}) }
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(data.error || "Não foi possível concluir a solicitação.");
-    error.status = response.status;
-    throw error;
-  }
-  return data;
+function openAuth(mode="login",pageName){
+ if(pageName)state.pendingPage=pageName;
+ authMode(mode);
+ $("#authModal").classList.remove("hidden");
+ $("#authEmail").focus();
 }
-
-function canUseLocalFallback(error) {
-  return !error.status || error.status === 404 || error.status === 405 || error.status >= 500;
+function closeAuth(){$("#authModal").classList.add("hidden");}
+async function submitAuth(event){
+ event.preventDefault();
+ if(!API_BASE){$("#authMessage").textContent="O formulário está pronto, mas o servidor de contas ainda não foi publicado. A publicação exige ativar a hospedagem da API.";return;}
+ const payload={email:$("#authEmail").value.trim(),password:$("#authPassword").value};
+ if(state.mode==="signup")payload.name=$("#authName").value.trim();
+ const submit=$("#authSubmit");submit.disabled=true;submit.textContent="Aguarde...";
+ try{
+  const result=await api(state.mode==="signup"?"/api/auth/register":"/api/auth/login",{method:"POST",body:JSON.stringify(payload)});
+  localStorage.setItem(TOKEN_KEY,result.token);
+  state.user=result.user;
+  closeAuth();authUI();toast(state.mode==="signup"?"Conta criada com sucesso.":"Entrada realizada com sucesso.");
+  const destination=state.pendingPage||"links";page(destination);
+  if(destination==="links")await loadLinks();
+  if(destination==="vendas")await loadPrivatePanel();
+ }catch(error){$("#authMessage").textContent=error.message;toast(error.message,true);}
+ finally{submit.disabled=false;submit.textContent=state.mode==="signup"?"Criar conta grátis →":"Entrar →";}
 }
-
-function setDataStatus() {
-  const status = $("#publicAccessStatus");
-  if (!status) return;
-  status.textContent = state.apiOnline
-    ? "● Catálogo compartilhado"
-    : "● Acesso livre · dados neste navegador";
-  status.title = state.apiOnline
-    ? "Os cadastros estão sendo salvos no servidor e podem ser vistos por todos."
-    : "Sem o servidor publicado, os cadastros ficam somente neste navegador.";
+async function logout(){
+ localStorage.removeItem(TOKEN_KEY);state.user=null;state.links=[];state.commissions=[];authUI();page("ofertas");toast("Você saiu da sua conta.");
 }
-
-function page(name, addHistory = true) {
-  if (!$("#page-" + name)) return;
-  state.page = name;
-  $$(".page").forEach(element => element.classList.add("hidden"));
-  $("#page-" + name).classList.remove("hidden");
-
-  $$(".nav").forEach(button => {
-    const active = button.dataset.page === name;
-    button.classList.toggle("active", active);
-    if (active) button.setAttribute("aria-current", "page");
-    else button.removeAttribute("aria-current");
-  });
-
-  if (addHistory && location.hash !== "#" + name) {
-    history.pushState({ page:name }, "", "#" + name);
-  }
-
-  if (name === "links") loadLinks();
-  if (name === "vendas") loadStats();
-  if (name === "ofertas") loadOffers();
-
-  window.scrollTo({ top:0, behavior:"smooth" });
+function page(name,addHistory=true){
+ if(!$("#page-"+name))return;
+ state.page=name;
+ $$(".page").forEach(el=>el.classList.add("hidden"));
+ $("#page-"+name).classList.remove("hidden");
+ $$(".nav").forEach(button=>{const active=button.dataset.page===name;button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");});
+ if(addHistory&&location.hash!=="#"+name)history.pushState({page:name},"","#"+name);
+ if(name==="ofertas")loadOffers();
+ if(name==="links"&&state.user)loadLinks();
+ if(name==="vendas"&&state.user)loadPrivatePanel();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
-
-function isValidWebLink(value) {
-  try {
-    const url = new URL(String(value).trim());
-    return (url.protocol === "http:" || url.protocol === "https:")
-      && Boolean(url.hostname)
-      && url.hostname.includes(".")
-      && !url.username
-      && !url.password;
-  } catch (_) {
-    return false;
-  }
+function currentFilters(){
+ const query=$("#search").value.trim().toLowerCase(),store=$("#store").value,category=$("#category").value,minimum=Number($("#minimum").value),sort=$("#sort").value;
+ const results=state.offers.filter(o=>(!query||(o.name+" "+o.store+" "+o.category).toLowerCase().includes(query))&&(!store||store===o.store)&&(!category||category===o.category)&&discount(o)>=minimum);
+ results.sort((a,b)=>sort==="price"?Number(a.price)-Number(b.price):sort==="recent"?String(b.created_at||"").localeCompare(String(a.created_at||"")):discount(b)-discount(a));
+ return results;
 }
-
-function discount(offer) {
-  const oldPrice = Number(offer.old_price);
-  const currentPrice = Number(offer.price);
-  return oldPrice > currentPrice && oldPrice > 0
-    ? Math.round((1 - currentPrice / oldPrice) * 100)
-    : 0;
+function renderOffers(){
+ const offers=currentFilters(),grid=$("#offerGrid");grid.innerHTML="";
+ $("#resultCount").textContent=offers.length+(offers.length===1?" oferta encontrada":" ofertas encontradas");
+ $("#emptyOffers").classList.toggle("hidden",offers.length!==0);
+ offers.forEach(offer=>{
+  const card=document.createElement("article");card.className="offer-card";
+  let action;
+  if(offer.sample)action='<button class="btn primary" type="button" disabled>Exemplo · sem link</button>';
+  else if(offer.local){const target=offer.affiliate_url||offer.destination_url;action='<a class="btn primary" href="'+esc(target)+'" target="_blank" rel="noopener noreferrer" data-local-offer="'+esc(offer.id)+'">Ver oferta ↗</a>';}
+  else action='<a class="btn primary" href="'+esc(apiUrl("/go/"+encodeURIComponent(offer.id)))+'" target="_blank" rel="noopener noreferrer">Ver oferta ↗</a>';
+  card.innerHTML='<div class="visual">'+esc(offer.icon||"🛍️")+'<span class="discount">-'+discount(offer)+'%</span>'+(offer.sample?'<span class="sample">EXEMPLO</span>':"")+'</div><div class="offer-body"><div class="store-name">'+esc(offer.store)+' · '+esc(offer.category)+'</div><div class="offer-title">'+esc(offer.name)+'</div><div class="old-price">'+money(offer.old_price)+'</div><div class="new-price">'+money(offer.price)+'</div><div class="coupon">'+(offer.coupon?"Cupom: "+esc(offer.coupon):"&nbsp;")+'</div><div class="offer-meta"><span>Conferir na loja</span><span>'+(offer.sample?"dados fictícios":"preço informado")+'</span></div>'+action+'</div>';
+  grid.append(card);
+ });
+ const stores=[...new Set(state.offers.map(o=>o.store))].sort(),select=$("#store"),previous=select.value;
+ select.innerHTML='<option value="">Todas as lojas</option>'+stores.map(s=>'<option value="'+esc(s)+'">'+esc(s)+'</option>').join("");
+ select.value=stores.includes(previous)?previous:"";
+ $("#offerCount").textContent=state.offers.length;$("#storeCount").textContent=stores.length;
+ $("#dataBadge").textContent=state.apiOnline?"CATÁLOGO ONLINE":state.demo?"AMOSTRA DE DEMONSTRAÇÃO":"DADOS LOCAIS";
 }
-
-function currentFilters() {
-  const query = $("#search").value.trim().toLowerCase();
-  const store = $("#store").value;
-  const category = $("#category").value;
-  const minimum = Number($("#minimum").value);
-  const sort = $("#sort").value;
-
-  const results = state.offers.filter(offer => {
-    const searchable = (offer.name + " " + offer.store + " " + offer.category).toLowerCase();
-    return (!query || searchable.includes(query))
-      && (!store || store === offer.store)
-      && (!category || category === offer.category)
-      && discount(offer) >= minimum;
-  });
-
-  results.sort((a, b) => {
-    if (sort === "price") return Number(a.price) - Number(b.price);
-    if (sort === "recent") return String(b.created_at || "").localeCompare(String(a.created_at || ""));
-    return discount(b) - discount(a);
-  });
-  return results;
+async function loadOffers(){
+ try{const data=await api("/api/offers");state.apiOnline=true;const local=localRead(STORAGE.offers).map(o=>({...o,local:true}));state.offers=[...(data.offers||[]),...local];state.demo=state.offers.length===0;if(state.demo)state.offers=demoOffers;}
+ catch(_){state.apiOnline=false;state.offers=[...localRead(STORAGE.offers).map(o=>({...o,local:true})),...demoOffers];state.demo=true;}
+ renderOffers();
 }
-
-function renderOffers() {
-  const offers = currentFilters();
-  const grid = $("#offerGrid");
-  grid.innerHTML = "";
-  $("#resultCount").textContent = offers.length + (offers.length === 1 ? " oferta encontrada" : " ofertas encontradas");
-  $("#emptyOffers").classList.toggle("hidden", offers.length !== 0);
-
-  offers.forEach(offer => {
-    const card = document.createElement("article");
-    card.className = "offer-card";
-
-    let action;
-    if (offer.sample) {
-      action = '<button class="btn primary" type="button" disabled>Exemplo · sem link</button>';
-    } else if (offer.local) {
-      const target = offer.affiliate_url || offer.destination_url;
-      action = '<a class="btn primary" href="' + escapeHTML(target) + '" target="_blank" rel="noopener noreferrer" data-local-offer="' + escapeHTML(offer.id) + '">Ver oferta ↗</a>';
-    } else {
-      action = '<a class="btn primary" href="' + escapeHTML(apiUrl("/go/" + encodeURIComponent(offer.id))) + '" target="_blank" rel="noopener noreferrer">Ver oferta ↗</a>';
-    }
-
-    card.innerHTML =
-      '<div class="visual">' + escapeHTML(offer.icon || "🛍️")
-      + '<span class="discount">-' + discount(offer) + '%</span>'
-      + (offer.sample ? '<span class="sample">EXEMPLO</span>' : "")
-      + '</div><div class="offer-body">'
-      + '<div class="store-name">' + escapeHTML(offer.store) + ' · ' + escapeHTML(offer.category) + '</div>'
-      + '<div class="offer-title">' + escapeHTML(offer.name) + '</div>'
-      + '<div class="old-price">' + money(offer.old_price) + '</div>'
-      + '<div class="new-price">' + money(offer.price) + '</div>'
-      + '<div class="coupon">' + (offer.coupon ? "Cupom: " + escapeHTML(offer.coupon) : "&nbsp;") + '</div>'
-      + '<div class="offer-meta"><span>Conferir na loja</span><span>' + (offer.sample ? "dados fictícios" : "preço informado") + '</span></div>'
-      + action + '</div>';
-    grid.append(card);
-  });
-
-  const stores = [...new Set(state.offers.map(offer => offer.store))].sort();
-  const storeFilter = $("#store");
-  const previousStore = storeFilter.value;
-  storeFilter.innerHTML = '<option value="">Todas as lojas</option>'
-    + stores.map(store => '<option value="' + escapeHTML(store) + '">' + escapeHTML(store) + '</option>').join("");
-  storeFilter.value = stores.includes(previousStore) ? previousStore : "";
-
-  $("#offerCount").textContent = state.offers.length;
-  $("#storeCount").textContent = stores.length;
-  $("#dataBadge").textContent = state.apiOnline
-    ? "CATÁLOGO COMPARTILHADO"
-    : state.demo ? "AMOSTRA + DADOS LOCAIS" : "DADOS NESTE NAVEGADOR";
-  setDataStatus();
+function renderLinks(){
+ const list=$("#myLinks");list.innerHTML="";$("#linkTotal").textContent=state.links.length;
+ if(!state.links.length){list.innerHTML='<div class="empty"><h3>Nenhum link cadastrado</h3><p>Adicione seu primeiro link de afiliado.</p></div>';return;}
+ state.links.forEach(link=>{
+  const row=document.createElement("div");row.className="data-row";
+  const tracked=apiUrl("/r/"+encodeURIComponent(link.id));
+  row.innerHTML='<div class="row-icon">↗</div><div class="row-main"><b>'+esc(link.name)+'</b><small>'+esc(link.store)+' · '+esc(link.url)+'</small></div><div class="row-metric">'+Number(link.clicks||0)+'<small>cliques</small></div><a class="row-btn" href="'+esc(tracked)+'" target="_blank" rel="noopener noreferrer">Abrir</a><button class="row-btn" type="button" data-copy="'+esc(tracked)+'">Copiar rastreamento</button><button class="row-btn" type="button" data-delete="'+esc(link.id)+'">Excluir</button>';
+  list.append(row);
+ });
 }
-
-async function loadOffers() {
-  try {
-    const data = await api("/api/offers");
-    state.apiOnline = true;
-    const localOffers = localRead(STORAGE.offers).map(offer => ({ ...offer, local:true }));
-    state.offers = [...(data.offers || []).map(offer => ({ ...offer, local:false })), ...localOffers];
-    state.demo = state.offers.length === 0;
-    if (state.demo) state.offers = demoOffers;
-  } catch (_) {
-    state.apiOnline = false;
-    const localOffers = localRead(STORAGE.offers).map(offer => ({ ...offer, local:true }));
-    state.offers = [...localOffers, ...demoOffers];
-    state.demo = true;
-  }
-  renderOffers();
+async function loadLinks(){
+ if(!state.user)return;
+ try{const data=await api("/api/affiliate-links");state.links=data.links||[];$("#storageMode").textContent="Conta pessoal";renderLinks();}
+ catch(error){toast(error.message,true);if(error.status===401)logout();}
 }
-
-async function loadLinks() {
-  try {
-    const data = await api("/api/affiliate-links");
-    state.apiOnline = true;
-    const localLinks = localRead(STORAGE.links).map(link => ({ ...link, local:true }));
-    state.links = [
-      ...(data.links || []).map(link => ({ ...link, local:false })),
-      ...localLinks
-    ];
-  } catch (_) {
-    state.apiOnline = false;
-    state.links = localRead(STORAGE.links).map(link => ({ ...link, local:true }));
-  }
-  renderLinks();
-  await loadStats();
-  setDataStatus();
+function renderCommissions(){
+ const list=$("#commissionList");list.innerHTML="";
+ if(!state.commissions.length){list.innerHTML='<div class="empty"><h3>Nenhuma comissão registrada</h3><p>Registre aqui os valores confirmados na rede parceira.</p></div>';return;}
+ state.commissions.forEach(item=>{
+  const label=item.status==="paid"?"Paga":item.status==="approved"?"Aprovada":"Pendente",row=document.createElement("div");row.className="data-row";
+  row.innerHTML='<div class="row-icon">R$</div><div class="row-main"><b>'+esc(item.store)+'</b><small>'+esc(item.reference||"Sem referência")+' · registro manual</small></div><span class="tag '+esc(item.status)+'">'+label+'</span><div class="row-metric">'+money(item.amount)+'</div>';
+  list.append(row);
+ });
 }
-
-function renderLinks() {
-  const list = $("#myLinks");
-  list.innerHTML = "";
-  $("#linkTotal").textContent = state.links.length;
-  $("#storageMode").textContent = state.apiOnline ? "Compartilhado" : "Neste navegador";
-
-  if (!state.links.length) {
-    list.innerHTML = '<div class="empty"><h3>Nenhum link cadastrado</h3><p>Adicione seu primeiro link de afiliado no formulário acima.</p></div>';
-    return;
-  }
-
-  state.links.forEach(link => {
-    const row = document.createElement("div");
-    row.className = "data-row";
-    const trackedUrl = link.local ? link.url : apiUrl("/r/" + encodeURIComponent(link.id));
-    row.innerHTML =
-      '<div class="row-icon">↗</div><div class="row-main"><b>' + escapeHTML(link.name)
-      + '</b><small>' + escapeHTML(link.store) + ' · ' + escapeHTML(link.url) + '</small></div>'
-      + '<div class="row-metric">' + Number(link.clicks || 0) + '<small>cliques</small></div>'
-      + '<a class="row-btn" href="' + escapeHTML(trackedUrl) + '" target="_blank" rel="noopener noreferrer"'
-      + (link.local ? ' data-local-link="' + escapeHTML(link.id) + '"' : "") + '>Abrir</a>'
-      + '<button class="row-btn" type="button" data-copy="' + escapeHTML(link.url) + '">Copiar URL</button>';
-    list.append(row);
-  });
+async function loadPrivatePanel(){
+ if(!state.user)return;
+ try{
+  const [stats,commissions]=await Promise.all([api("/api/stats"),api("/api/commissions")]);
+  state.stats=stats;state.commissions=commissions.commissions||[];
+  $("#salesClicks").textContent=stats.clicks||0;$("#salesOffers").textContent=stats.offers||0;$("#salesLinks").textContent=stats.links||0;
+  $("#pendingSum").textContent=money(stats.pending||0);$("#approvedSum").textContent=money(stats.approved||0);$("#paidSum").textContent=money(stats.paid||0);
+  renderCommissions();
+ }catch(error){toast(error.message,true);if(error.status===401)logout();}
 }
-
-function localClicks() {
-  return localRead(STORAGE.clicks).reduce((sum, item) => sum + Number(item.count || 0), 0);
+function trackLocalClick(id){const clicks=localRead(STORAGE.clicks),entry=clicks.find(x=>x.id===id);if(entry)entry.count=Number(entry.count||0)+1;else clicks.push({id,count:1});localWrite(STORAGE.clicks,clicks);}
+async function addLink(event){
+ event.preventDefault();const url=$("#linkUrl").value.trim();
+ if(!isValidWebLink(url)){toast("Cole um endereço válido iniciado por http:// ou https://.",true);$("#linkUrl").focus();return;}
+ try{await api("/api/affiliate-links",{method:"POST",body:JSON.stringify({store:$("#linkStore").value.trim(),name:$("#linkName").value.trim(),url})});$("#linkForm").reset();toast("Link salvo na sua conta.");await loadLinks();}
+ catch(error){toast(error.message,true);if(error.status===401)logout();}
 }
-
-async function loadStats() {
-  try {
-    const data = await api("/api/stats");
-    state.apiOnline = true;
-    state.stats = data;
-  } catch (_) {
-    state.apiOnline = false;
-    state.stats = {
-      clicks:localClicks(),
-      offers:localRead(STORAGE.offers).length,
-      links:localRead(STORAGE.links).length,
-      offerClicks:localClicks(),
-      linkClicks:0
-    };
-  }
-
-  $("#linkClicks").textContent = state.stats.clicks || 0;
-  $("#salesClicks").textContent = state.stats.clicks || 0;
-  $("#salesOffers").textContent = state.stats.offers || localRead(STORAGE.offers).length;
-  $("#salesLinks").textContent = state.stats.links || localRead(STORAGE.links).length;
-  setDataStatus();
+async function addOffer(event){
+ event.preventDefault();const destination=$("#destinationUrl").value.trim(),affiliate=$("#offerAffiliate").value.trim(),old=Number($("#oldPrice").value),price=Number($("#newPrice").value);
+ if(!isValidWebLink(destination)){toast("Informe o link original válido do produto.",true);$("#destinationUrl").focus();return;}
+ if(affiliate&&!isValidWebLink(affiliate)){toast("O link de afiliado não é válido.",true);$("#offerAffiliate").focus();return;}
+ if(!Number.isFinite(old)||!Number.isFinite(price)||old<=0||price<=0||price>=old){toast("O preço promocional precisa ser menor que o anterior.",true);$("#newPrice").focus();return;}
+ const payload={name:$("#productName").value.trim(),store:$("#productStore").value.trim(),category:$("#productCategory").value,old_price:old,price,coupon:$("#coupon").value.trim(),destination_url:destination,affiliate_url:affiliate,expires_at:$("#expiry").value||null};
+ try{await api("/api/offers",{method:"POST",body:JSON.stringify(payload)});$("#offerForm").reset();toast("Oferta publicada no catálogo.");await loadOffers();page("ofertas");}
+ catch(error){toast(error.message,true);if(error.status===401)logout();}
 }
-
-function trackLocalClick(id) {
-  const clicks = localRead(STORAGE.clicks);
-  const entry = clicks.find(item => item.id === id);
-  if (entry) entry.count = Number(entry.count || 0) + 1;
-  else clicks.push({ id, count:1 });
-  localWrite(STORAGE.clicks, clicks);
+async function addCommission(event){
+ event.preventDefault();const payload={store:$("#saleStore").value.trim(),amount:Number($("#saleAmount").value),status:$("#saleStatus").value,reference:$("#saleRef").value.trim()};
+ try{await api("/api/commissions",{method:"POST",body:JSON.stringify(payload)});$("#commissionForm").reset();toast("Comissão registrada. Confira o status no parceiro.");await loadPrivatePanel();}
+ catch(error){toast(error.message,true);if(error.status===401)logout();}
 }
-
-async function addLink(event) {
-  event.preventDefault();
-  const url = $("#linkUrl").value.trim();
-  if (!isValidWebLink(url)) {
-    toast("Cole um link válido começando com http:// ou https://.", true);
-    $("#linkUrl").focus();
-    return;
-  }
-
-  const payload = {
-    store:$("#linkStore").value.trim(),
-    name:$("#linkName").value.trim(),
-    url
-  };
-
-  try {
-    await api("/api/affiliate-links", { method:"POST", body:JSON.stringify(payload) });
-    $("#linkForm").reset();
-    toast("Link adicionado ao mural público.");
-    await loadLinks();
-  } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      toast(error.message, true);
-      return;
-    }
-    const links = localRead(STORAGE.links);
-    links.unshift({ id:"local-" + Date.now(), ...payload, clicks:0, created_at:new Date().toISOString(), local:true });
-    if (localWrite(STORAGE.links, links)) {
-      $("#linkForm").reset();
-      state.links = links;
-      renderLinks();
-      toast("Link salvo neste navegador. Para compartilhar entre visitantes, ative o servidor.");
-    }
-  }
+function bind(){
+ $$(".nav,[data-page]").forEach(button=>button.addEventListener("click",()=>page(button.dataset.page)));
+ $$("[data-auth]").forEach(button=>button.addEventListener("click",()=>openAuth("login",state.page)));
+ $$("[data-close]").forEach(button=>button.addEventListener("click",closeAuth));
+ $("#accountButton").addEventListener("click",()=>state.user?logout():openAuth());
+ $("#authForm").addEventListener("submit",submitAuth);
+ $("#switchMode").addEventListener("click",()=>authMode(state.mode==="login"?"signup":"login"));
+ $("#linkForm").addEventListener("submit",addLink);$("#offerForm").addEventListener("submit",addOffer);$("#commissionForm").addEventListener("submit",addCommission);
+ $$("[data-scroll]").forEach(button=>button.addEventListener("click",()=>{const target=$("#"+button.dataset.scroll);if(target)target.scrollIntoView({behavior:"smooth"});}));
+ ["search","store","category","minimum","sort"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",renderOffers));
+ $("#clearFilters").addEventListener("click",()=>{$("#search").value="";$("#store").value="";$("#category").value="";$("#minimum").value="0";$("#sort").value="discount";renderOffers();});
+ $("#myLinks").addEventListener("click",async event=>{
+  const copy=event.target.closest("[data-copy]");if(copy){try{await navigator.clipboard.writeText(new URL(copy.dataset.copy,location.href).href);toast("Link de rastreamento copiado.");}catch(_){toast("Não foi possível copiar.",true);}}
+  const del=event.target.closest("[data-delete]");if(del&&confirm("Excluir este link da sua conta?")){try{await api("/api/affiliate-links/"+encodeURIComponent(del.dataset.delete),{method:"DELETE"});await loadLinks();toast("Link excluído.");}catch(error){toast(error.message,true);}}
+ });
+ $("#offerGrid").addEventListener("click",async event=>{const local=event.target.closest("[data-local-offer]");if(local)trackLocalClick(local.dataset.localOffer);});
+ window.addEventListener("popstate",()=>{const name=location.hash.slice(1);page($("#page-"+name)?name:"ofertas",false);});
+ $("#authModal").addEventListener("keydown",event=>{if(event.key==="Escape")closeAuth();});
 }
-
-async function addOffer(event) {
-  event.preventDefault();
-  const destination = $("#destinationUrl").value.trim();
-  const affiliate = $("#offerAffiliate").value.trim();
-  const oldPrice = Number($("#oldPrice").value);
-  const price = Number($("#newPrice").value);
-
-  if (!isValidWebLink(destination)) {
-    toast("Informe o link válido do produto, começando com http:// ou https://.", true);
-    $("#destinationUrl").focus();
-    return;
-  }
-  if (affiliate && !isValidWebLink(affiliate)) {
-    toast("O link de afiliado precisa ser um endereço http:// ou https:// válido.", true);
-    $("#offerAffiliate").focus();
-    return;
-  }
-  if (!Number.isFinite(oldPrice) || !Number.isFinite(price) || oldPrice <= 0 || price <= 0 || price >= oldPrice) {
-    toast("O preço promocional deve ser menor que o preço anterior.", true);
-    $("#newPrice").focus();
-    return;
-  }
-
-  const offer = {
-    name:$("#productName").value.trim(),
-    store:$("#productStore").value.trim(),
-    category:$("#productCategory").value,
-    old_price:oldPrice,
-    price,
-    coupon:$("#coupon").value.trim(),
-    destination_url:destination,
-    affiliate_url:affiliate,
-    expires_at:$("#expiry").value || null
-  };
-
-  try {
-    await api("/api/offers", { method:"POST", body:JSON.stringify(offer) });
-    $("#offerForm").reset();
-    toast("Produto publicado no catálogo compartilhado.");
-    await loadOffers();
-    page("ofertas");
-  } catch (error) {
-    if (!canUseLocalFallback(error)) {
-      toast(error.message, true);
-      return;
-    }
-    const offers = localRead(STORAGE.offers);
-    offers.unshift({
-      id:"local-" + Date.now(),
-      ...offer,
-      local:true,
-      clicks:0,
-      created_at:new Date().toISOString(),
-      icon:"🛍️"
-    });
-    if (localWrite(STORAGE.offers, offers)) {
-      $("#offerForm").reset();
-      toast("Produto salvo neste navegador. Para compartilhar com todos, ative o servidor.");
-      await loadOffers();
-      page("ofertas");
-    }
-  }
+async function init(){
+ bind();authUI();await loadOffers();
+ const token=localStorage.getItem(TOKEN_KEY);
+ if(token&&API_BASE){try{const data=await api("/api/me");state.user=data.user;authUI();}catch(_){localStorage.removeItem(TOKEN_KEY);}}
+ const initial=location.hash.slice(1),start=$("#page-"+initial)?initial:"ofertas";
+ page(start,false);authUI();
 }
-
-function bind() {
-  $$(".nav,[data-page]").forEach(button => {
-    button.addEventListener("click", () => page(button.dataset.page));
-  });
-
-  $$("[data-scroll]").forEach(button => {
-    button.addEventListener("click", () => {
-      const target = $("#" + button.dataset.scroll);
-      if (target) target.scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-  });
-
-  $("#linkForm").addEventListener("submit", addLink);
-  $("#offerForm").addEventListener("submit", addOffer);
-
-  ["search","store","category","minimum","sort"].forEach(id => {
-    $("#" + id).addEventListener(id === "search" ? "input" : "change", renderOffers);
-  });
-
-  $("#clearFilters").addEventListener("click", () => {
-    $("#search").value = "";
-    $("#store").value = "";
-    $("#category").value = "";
-    $("#minimum").value = "0";
-    $("#sort").value = "discount";
-    renderOffers();
-  });
-
-  $("#myLinks").addEventListener("click", async event => {
-    const copyButton = event.target.closest("[data-copy]");
-    if (copyButton) {
-      try {
-        await navigator.clipboard.writeText(copyButton.dataset.copy);
-        toast("Link copiado.");
-      } catch (_) {
-        toast("Não foi possível copiar o link.", true);
-      }
-    }
-    const localLink = event.target.closest("[data-local-link]");
-    if (localLink) {
-      trackLocalClick(localLink.dataset.localLink);
-      await loadStats();
-    }
-  });
-
-  $("#offerGrid").addEventListener("click", async event => {
-    const localOffer = event.target.closest("[data-local-offer]");
-    if (localOffer) {
-      trackLocalClick(localOffer.dataset.localOffer);
-      await loadStats();
-    }
-  });
-
-  window.addEventListener("popstate", () => {
-    const name = location.hash.replace("#", "");
-    page($("#page-" + name) ? name : "ofertas", false);
-  });
-}
-
-async function init() {
-  bind();
-  await loadOffers();
-  await loadStats();
-  const initialPage = location.hash.replace("#", "");
-  page($("#page-" + initialPage) ? initialPage : "ofertas", false);
-}
-
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded",init);
 })();
