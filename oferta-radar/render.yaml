@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: oferta-radar
+    runtime: node
+    rootDir: oferta-radar/backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    plan: starter
+    disk:
+      name: oferta-radar-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PATH
+        value: /var/data/oferta-radar.sqlite
+      - key: SESSION_SECRET
+        generateValue: true
