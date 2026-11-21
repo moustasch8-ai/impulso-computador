@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://moustasch8-ai.github.io/impulso-computador/sitemap.xml
