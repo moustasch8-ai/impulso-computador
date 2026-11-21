@@ -27,9 +27,9 @@ language sql
 stable
 security definer
 set search_path = ''
-as $
+as $function$
   select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
-$;
+$function$;
 
 drop policy if exists "profiles_select_own_or_admin" on public.profiles;
 create policy "profiles_select_own_or_admin"
