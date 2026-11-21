@@ -78,7 +78,7 @@ footer{border-top:1px solid var(--line);background:white;padding:22px;text-align
 </section>
 <section class="panel" id="adminPanel" style="display:none">
   <div class="row" style="align-items:center;justify-content:space-between;gap:12px"><div><h2 style="margin:0">Painel administrativo</h2><p class="muted-line">Revise os cadastros pendentes de motoristas.</p></div><button type="button" class="secondary" id="refreshDrivers">Atualizar lista</button></div>
-  <div id="pendingDriversList" class="admin-list"><div class="empty">Carregando cadastros...</div></div>
+  <div id="adminMessage" class="status-message" role="status" aria-live="polite" hidden></div><div id="pendingDriversList" class="admin-list"><div class="empty">Carregando cadastros...</div></div>
 </section>
 
 <h2 class="section-title">Feito para conectar Alagoas</h2><section class="features">
@@ -121,8 +121,15 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
   let activeUser = null;
 
   function message(text, type = "info") {
+    const className = "status-message" + (type === "success" ? " success" : type === "error" ? " error" : "");
     authMessage.textContent = text;
-    authMessage.className = "status-message" + (type === "success" ? " success" : type === "error" ? " error" : "");
+    authMessage.className = className;
+    const adminMessage = document.getElementById("adminMessage");
+    if (adminMessage && adminPanel.style.display === "block") {
+      adminMessage.textContent = text;
+      adminMessage.className = className;
+      adminMessage.hidden = false;
+    }
   }
   function setAuthMode(mode) {
     loginForm.hidden = mode !== "login";
