@@ -124,3 +124,26 @@ O workflow `.github/workflows/pages.yml` publica automaticamente o conteúdo da 
 ### Limites da demonstração hospedada
 
 O GitHub Pages hospeda apenas arquivos estáticos. A demonstração permite navegar pelo painel e guardar algumas preferências no armazenamento local do navegador. A autenticação OAuth e as chamadas reais à API do Instagram precisam do servidor Node.js configurado e hospedado separadamente; por segurança, o App Secret e tokens nunca devem ser colocados nos arquivos publicados do Pages.
+
+
+## Conectar o Instagram e hospedar o servidor
+
+O GitHub Pages publica somente o site estático. O fluxo OAuth do Instagram precisa do servidor Node.js, que pode ser hospedado como Web Service no Render.
+
+1. Abra [Render](https://dashboard.render.com/) e crie um Blueprint a partir deste repositório.
+2. O arquivo `render.yaml` configura o serviço `impulso-instagram`, o comando de inicialização, o endpoint de saúde e gera um segredo de sessão.
+3. No painel do Render, informe `INSTAGRAM_APP_ID` e `INSTAGRAM_APP_SECRET) com os valores do seu aplicativo Meta. Não coloque esses segredos no GitHub ou no chat.
+4. Depois de o Render criar a URL pública do serviço (por exemplo, `https://impulso-instagram.onrender.com`), cadastre no painel Meta, como URI de redirecionamento OAuth, exatamente:
+   `https://SEU-DOMINIO-RENDER/auth/instagram/callback`
+5. No painel Meta, configure Instagram API with Instagram Login e as permissões `instagram_business_basic` e `instagram_business_manage_insights`. Use uma conta Instagram profissional (Criador ou Empresa).
+6. Abra a URL do serviço Render para usar o painel e iniciar a conexão Instagram.
+
+O servidor deriva a URI de callback de `RENDER_EXTERNAL_URL` por padrão. Se usar domínio personalizado, configure `INSTAGRAM_REDIRECT_URI` no Render e cadastre exatamente a mesma URI na Meta.
+
+**Importante:** a conexão Instagram Login serve para perfil e métricas; ela não acessa a API de anúncios. O fluxo de anúncios pagos exige integração separada com Meta Marketing API, permissões de anúncios, conta de anúncios e método de pagamento. O usuário deve revisar e confirmar orçamento, público, duração e publicação antes de qualquer gasto.
+
+A configuração atual de sessão em memória é adequada apenas para testes. Para uso contínuo, configure armazenamento de sessão persistente e siga as recomendações de segurança do README antes de abrir o serviço a outros usuários.
+
+## Impulsionamento pago
+
+Para criar anúncios pelo Impulso, seria necessário desenvolver a integração separada com a Meta Marketing API e obter as permissões e acesso exigidos pela Meta. Como alternativa imediata, use o aplicativo Instagram ou o Meta Business Suite para escolher uma publicação existente, objetivo, público, orçamento e período de veiculação. Revise os valores e confirme o anúncio na própria Meta.
