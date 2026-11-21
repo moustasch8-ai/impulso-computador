@@ -28,10 +28,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
       - name: Validate Oferta Radar scripts
-        run: node --check oferta-radar/config.js && node --check oferta-radar/app.js && node --check oferta-radar/backend/server.js
+        run: node --check oferta-radar/config.js && node --check oferta-radar/app.js && node --check oferta-radar/backend/server.js && node --check oferta-radar/backend/smoke-test.js
+      - name: Test public Oferta Radar API
+        run: npm install --no-audit --no-fund && npm test
+        working-directory: oferta-radar/backend
       - name: Add Oferta Radar frontend to Pages
         run: |
           mkdir -p site/oferta-radar
