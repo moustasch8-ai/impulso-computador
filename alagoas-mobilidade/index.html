@@ -12,12 +12,47 @@ main{max-width:1120px;margin:auto;padding:34px 20px 64px}.hero{display:grid;grid
 .panel{background:white;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 12px 35px #5d35100b}.tabs{display:flex;gap:8px;background:#fff5ed;padding:5px;border-radius:13px;margin-bottom:22px}.tab{flex:1;border:0;background:transparent;padding:12px;border-radius:10px;font-weight:750;color:#80543a;cursor:pointer}.tab.active{background:var(--orange);color:white}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:750}input,select,textarea{width:100%;border:1px solid #e5ddd6;border-radius:11px;padding:13px 12px;font:inherit;background:#fff;color:var(--ink);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f477211c}.primary{border:0;border-radius:12px;background:var(--orange);color:#fff;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer}.primary:hover{background:var(--orange-dark)}.secondary{border:1px solid #f2c6a7;background:#fff7f0;color:#a94b0a;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}.fullbtn{width:100%;margin-top:18px}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}.section-title{margin:36px 0 14px;font-size:23px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{background:#fff;border:1px solid var(--line);padding:18px;border-radius:17px}.feature .emoji{font-size:24px}.feature h3{margin:10px 0 6px;font-size:16px}.feature p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}.notice{background:#fff4e9;border:1px solid #f8d7bd;color:#7a411d;border-radius:14px;padding:14px;font-size:13px;line-height:1.55;margin-top:18px}.driver-view{display:none}.ride-list{display:grid;gap:10px;margin-top:14px}.ride{border:1px solid var(--line);padding:14px;border-radius:13px}.ride strong{display:block;margin-bottom:5px}.empty{padding:18px;border:1px dashed #e7d8cb;border-radius:13px;color:var(--muted);font-size:14px;text-align:center}
 footer{border-top:1px solid var(--line);background:white;padding:22px;text-align:center;color:var(--muted);font-size:12px}
 @media(max-width:760px){main{padding:24px 14px 45px}.hero{grid-template-columns:1fr}.hero-art{min-height:150px}.road{height:85px}.features{grid-template-columns:1fr}.panel{padding:17px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.nav{padding:11px 14px}}
+
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.auth-form{display:grid;gap:13px}.auth-form[hidden]{display:none}.auth-tabs{display:flex;gap:8px;background:#fff5ed;padding:5px;border-radius:13px;margin:16px 0}.auth-tabs button{flex:1;border:0;background:transparent;padding:11px;border-radius:10px;font-weight:750;color:#80543a;cursor:pointer}.auth-tabs button.active{background:var(--orange);color:white}.accountbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:13px 16px;background:#fff;border:1px solid var(--line);border-radius:14px}.status-message{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff4e9;color:#7a411d;font-size:13px;line-height:1.5}.status-message.success{background:#eaf8ef;color:#17623a}.status-message.error{background:#fff0f0;color:#9d2525}.admin-list{display:grid;gap:10px;margin-top:16px}.admin-driver{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--line);padding:14px;border-radius:13px}.admin-actions{display:flex;gap:8px;flex-wrap:wrap}.danger{border:1px solid #f0bcbc;background:#fff4f4;color:#9d2525;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}.muted-line{font-size:12px;color:var(--muted);line-height:1.5}
 </style></head>
 <body>
-<header><div class="nav"><div class="brand"><span class="logo">↗</span><span>Alagoas Mobilidade</span></div><small>Conectando Alagoas</small></div></header>
+<header><div class="nav"><div class="brand"><span class="logo">↗</span><span>Alagoas Mobilidade</span></div><small id="headerStatus">Acesse sua conta</small></div></header>
 <main>
 <section class="hero"><div><div class="eyebrow">Mobilidade em todo o estado</div><h1>Sua próxima corrida começa aqui.</h1><p>Uma ideia de plataforma para aproximar passageiros e motoristas de Alagoas, da capital ao interior.</p></div><div class="hero-art" aria-hidden="true"><div class="road">🚗</div></div></section>
-<section class="panel">
+
+<section class="panel" id="authPanel">
+  <div class="eyebrow">Área segura do usuário</div>
+  <h2 style="margin:8px 0 4px">Entre ou crie sua conta</h2>
+  <p style="margin:0;color:var(--muted);font-size:14px">Use uma conta de passageiro ou motorista para acessar a plataforma.</p>
+  <div class="auth-tabs"><button type="button" id="loginTab" class="active">Entrar</button><button type="button" id="signupTab">Criar conta</button></div>
+  <form id="loginForm" class="auth-form">
+    <div class="field"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="voce@email.com"></div>
+    <div class="field"><label for="loginPassword">Senha</label><input id="loginPassword" type="password" autocomplete="current-password" required minlength="8" placeholder="Sua senha"></div>
+    <button class="primary fullbtn" type="submit">Entrar na conta</button>
+    <button type="button" class="secondary" id="forgotPassword">Esqueci minha senha</button>
+  </form>
+  <form id="signupForm" class="auth-form" hidden>
+    <div class="auth-grid">
+      <div class="field"><label for="signupName">Nome completo</label><input id="signupName" required maxlength="100" autocomplete="name" placeholder="Seu nome"></div>
+      <div class="field"><label for="signupPhone">Celular</label><input id="signupPhone" required maxlength="25" autocomplete="tel" placeholder="(82) 99999-9999"></div>
+      <div class="field full"><label for="signupEmail">E-mail</label><input id="signupEmail" type="email" required autocomplete="email" placeholder="voce@email.com"></div>
+      <div class="field"><label for="signupPassword">Senha (mínimo 8 caracteres)</label><input id="signupPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Crie uma senha"></div>
+      <div class="field"><label for="signupType">Tipo de conta</label><select id="signupType"><option value="passenger">Passageiro</option><option value="driver">Motorista</option></select></div>
+      <div class="field full" id="vehicleField" hidden><label for="vehicleInfo">Veículo (modelo e ano)</label><input id="vehicleInfo" maxlength="100" placeholder="Ex.: Fiat Argo 2022"></div>
+    </div>
+    <button class="primary fullbtn" type="submit">Criar minha conta</button>
+    <p class="muted-line">Cadastros de motorista começam com status pendente e só liberam a área do motorista após aprovação administrativa.</p>
+  </form>
+  <form id="recoveryForm" class="auth-form" hidden>
+    <h3 style="margin:4px 0">Criar nova senha</h3>
+    <div class="field"><label for="newPassword">Nova senha</label><input id="newPassword" type="password" minlength="8" required autocomplete="new-password"></div>
+    <button class="primary" type="submit">Salvar nova senha</button>
+  </form>
+  <div id="authMessage" class="status-message" role="status" aria-live="polite">Conecte o projeto a um backend para ativar as contas.</div>
+</section>
+<div class="accountbar" id="accountBar" style="display:none"><div><strong id="accountName">Conta conectada</strong><div class="muted-line" id="accountDetail"></div></div><button type="button" class="secondary" id="logoutButton">Sair</button></div>
+
+<section class="panel" id="appPanel" style="display:none">
 <div class="tabs"><button class="tab active" id="passengerTab" type="button">Sou passageiro</button><button class="tab" id="driverTab" type="button">Sou motorista</button></div>
 <div id="passengerView">
 <h2 style="margin:0 0 6px">Solicitar uma corrida</h2><p style="margin:0 0 20px;color:var(--muted);font-size:14px">Informe os locais para registrar seu pedido de corrida.</p>
@@ -35,6 +70,17 @@ footer{border-top:1px solid var(--line);background:white;padding:22px;text-align
 </div>
 <div class="driver-view" id="driverView"><h2 style="margin:0 0 6px">Área do motorista</h2><p style="margin:0;color:var(--muted);font-size:14px">Veja os pedidos de demonstração registrados neste mesmo navegador.</p><div id="rideList" class="ride-list"><div class="empty">Nenhum pedido registrado por enquanto.</div></div><div class="notice">Para receber corridas de outros celulares, será necessário conectar o aplicativo a um servidor e banco de dados com contas verificadas.</div></div>
 </section>
+
+<section class="panel" id="pendingDriverPanel" style="display:none">
+  <h2 style="margin:0 0 8px">Cadastro recebido</h2>
+  <p>Seu cadastro de motorista está pendente de análise. Você poderá acessar a área de corridas depois que um administrador aprovar seu cadastro.</p>
+  <div class="notice">A aprovação administrativa é uma etapa de controle do aplicativo. A conferência de identidade, habilitação e documentação do veículo precisa ser feita pela equipe antes da aprovação.</div>
+</section>
+<section class="panel" id="adminPanel" style="display:none">
+  <div class="row" style="align-items:center;justify-content:space-between;gap:12px"><div><h2 style="margin:0">Painel administrativo</h2><p class="muted-line">Revise os cadastros pendentes de motoristas.</p></div><button type="button" class="secondary" id="refreshDrivers">Atualizar lista</button></div>
+  <div id="pendingDriversList" class="admin-list"><div class="empty">Carregando cadastros...</div></div>
+</section>
+
 <h2 class="section-title">Feito para conectar Alagoas</h2><section class="features">
 <div class="feature"><div class="emoji">📍</div><h3>Corridas entre cidades</h3><p>Planejado para atender municípios da região metropolitana, litoral, agreste e sertão.</p></div>
 <div class="feature"><div class="emoji">🤝</div><h3>Passageiros e motoristas</h3><p>Experiência dedicada para quem precisa viajar e para quem oferece transporte.</p></div>
@@ -54,4 +100,215 @@ function getRides(){try{return JSON.parse(localStorage.getItem('alagoasMobilidad
 document.getElementById('rideForm').addEventListener('submit',e=>{e.preventDefault();const ride={id:Date.now(),from:from.value,to:to.value,pickup:document.getElementById('pickup').value.trim(),destination:document.getElementById('destination').value.trim(),when:document.getElementById('when').value,people:document.getElementById('people').value,payment:document.getElementById('payment').value,created:new Date().toLocaleString('pt-BR')};const rides=getRides();rides.unshift(ride);localStorage.setItem('alagoasMobilidadeRides',JSON.stringify(rides));document.getElementById('confirmation').innerHTML='<div class="notice"><strong>Pedido registrado neste navegador!</strong><br>'+ride.from+' → '+ride.to+'. Pagamento escolhido: '+escapeHtml(ride.payment)+'. Isso é apenas uma demonstração; nenhum motorista foi notificado e nenhum pagamento foi cobrado.</div>';e.target.reset();from.value='Cacimbinhas';to.value='Arapiraca'});
 function renderRides(){const list=document.getElementById('rideList'),rides=getRides();if(!rides.length){list.innerHTML='<div class="empty">Nenhum pedido registrado por enquanto.</div>';return}list.innerHTML=rides.map(r=>'<article class="ride"><strong>'+escapeHtml(r.from)+' → '+escapeHtml(r.to)+'</strong><div>'+escapeHtml(r.pickup)+' até '+escapeHtml(r.destination)+'</div><small style="color:#697078">'+escapeHtml(r.when)+' · '+escapeHtml(r.people)+' · Pagamento: '+escapeHtml(r.payment||'Não informado')+' · '+escapeHtml(r.created)+'</small></article>').join('')}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(() => {
+  const config = window.ALAGOAS_SUPABASE_CONFIG || {};
+  const configured = config.url && config.anonKey && !String(config.url).includes("SEU-PROJETO") && !String(config.anonKey).includes("SUA_CHAVE");
+  const sb = configured && window.supabase ? window.supabase.createClient(config.url, config.anonKey) : null;
+  const authPanel = document.getElementById("authPanel");
+  const appPanel = document.getElementById("appPanel");
+  const pendingPanel = document.getElementById("pendingDriverPanel");
+  const adminPanel = document.getElementById("adminPanel");
+  const accountBar = document.getElementById("accountBar");
+  const authMessage = document.getElementById("authMessage");
+  const headerStatus = document.getElementById("headerStatus");
+  const loginForm = document.getElementById("loginForm");
+  const signupForm = document.getElementById("signupForm");
+  const recoveryForm = document.getElementById("recoveryForm");
+  let activeUser = null;
+
+  function message(text, type = "info") {
+    authMessage.textContent = text;
+    authMessage.className = "status-message" + (type === "success" ? " success" : type === "error" ? " error" : "");
+  }
+  function setAuthMode(mode) {
+    loginForm.hidden = mode !== "login";
+    signupForm.hidden = mode !== "signup";
+    recoveryForm.hidden = mode !== "recovery";
+    document.getElementById("loginTab").classList.toggle("active", mode === "login");
+    document.getElementById("signupTab").classList.toggle("active", mode === "signup");
+  }
+  function showOnly(element) {
+    [authPanel, appPanel, pendingPanel, adminPanel].forEach(el => el.style.display = el === element ? "block" : "none");
+  }
+  function requireBackend() {
+    if (!sb) {
+      message("Para ativar o cadastro e o login, configure a URL e a chave pública do seu projeto Supabase no arquivo supabase-config.js e execute o arquivo supabase/schema.sql no SQL Editor do Supabase.", "error");
+      return false;
+    }
+    return true;
+  }
+  document.getElementById("loginTab").addEventListener("click", () => setAuthMode("login"));
+  document.getElementById("signupTab").addEventListener("click", () => setAuthMode("signup"));
+  document.getElementById("signupType").addEventListener("change", e => {
+    document.getElementById("vehicleField").hidden = e.target.value !== "driver";
+  });
+  document.getElementById("forgotPassword").addEventListener("click", async () => {
+    if (!requireBackend()) return;
+    const email = document.getElementById("loginEmail").value.trim();
+    if (!email) return message("Digite seu e-mail no campo acima para receber o link de recuperação.", "error");
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+    if (error) return message(error.message, "error");
+    message("Enviamos um link de recuperação para o e-mail informado. Verifique também a caixa de spam.", "success");
+  });
+  loginForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!requireBackend()) return;
+    const button = loginForm.querySelector('button[type="submit"]');
+    button.disabled = true; button.textContent = "Entrando...";
+    const { error } = await sb.auth.signInWithPassword({
+      email: document.getElementById("loginEmail").value.trim(),
+      password: document.getElementById("loginPassword").value
+    });
+    button.disabled = false; button.textContent = "Entrar na conta";
+    if (error) return message(error.message, "error");
+    await loadAccount();
+  });
+  signupForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!requireBackend()) return;
+    const button = signupForm.querySelector('button[type="submit"]');
+    button.disabled = true; button.textContent = "Criando conta...";
+    const kind = document.getElementById("signupType").value;
+    const { data, error } = await sb.auth.signUp({
+      email: document.getElementById("signupEmail").value.trim(),
+      password: document.getElementById("signupPassword").value,
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname,
+        data: {
+          full_name: document.getElementById("signupName").value.trim(),
+          phone: document.getElementById("signupPhone").value.trim(),
+          account_type: kind,
+          vehicle_info: kind === "driver" ? document.getElementById("vehicleInfo").value.trim() : ""
+        }
+      }
+    });
+    button.disabled = false; button.textContent = "Criar minha conta";
+    if (error) return message(error.message, "error");
+    if (data.session) {
+      message("Conta criada com sucesso. Carregando seu perfil...", "success");
+      await loadAccount();
+    } else {
+      setAuthMode("login");
+      message("Cadastro enviado! Confira seu e-mail e confirme o endereço antes de entrar.", "success");
+    }
+  });
+  recoveryForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!requireBackend()) return;
+    const password = document.getElementById("newPassword").value;
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) return message(error.message, "error");
+    setAuthMode("login");
+    message("Senha atualizada. Entre usando sua nova senha.", "success");
+  });
+  document.getElementById("logoutButton").addEventListener("click", async () => {
+    if (!sb) return;
+    const { error } = await sb.auth.signOut();
+    if (error) return message(error.message, "error");
+    activeUser = null;
+    accountBar.style.display = "none";
+    headerStatus.textContent = "Acesse sua conta";
+    showOnly(authPanel); setAuthMode("login");
+    message("Você saiu da sua conta.", "success");
+  });
+
+  async function loadAccount() {
+    if (!sb) return;
+    const { data: userData, error: userError } = await sb.auth.getUser();
+    if (userError || !userData.user) {
+      showOnly(authPanel); accountBar.style.display = "none";
+      return message("Não foi possível validar sua sessão. Entre novamente.", "error");
+    }
+    activeUser = userData.user;
+    const { data: profile, error } = await sb.from("profiles")
+      .select("id,full_name,email,phone,account_type,driver_status,vehicle_info")
+      .eq("id", activeUser.id).single();
+    if (error || !profile) {
+      showOnly(authPanel);
+      return message("Sua conta foi autenticada, mas o perfil não foi encontrado. Confira se o arquivo supabase/schema.sql foi executado sem erros.", "error");
+    }
+    authPanel.style.display = "none";
+    accountBar.style.display = "flex";
+    document.getElementById("accountName").textContent = profile.full_name || activeUser.email;
+    document.getElementById("accountDetail").textContent = (profile.account_type === "driver" ? "Motorista" : "Passageiro") + " · " + activeUser.email;
+    headerStatus.textContent = "Conta conectada";
+    if (activeUser.app_metadata && activeUser.app_metadata.role === "admin") {
+      showOnly(adminPanel); await loadPendingDrivers(); return;
+    }
+    if (profile.account_type === "driver") {
+      if (profile.driver_status !== "approved") {
+        showOnly(pendingPanel);
+        pendingPanel.querySelector("h2").textContent = profile.driver_status === "rejected" ? "Cadastro não aprovado" : "Cadastro recebido";
+        pendingPanel.querySelector("p").textContent = profile.driver_status === "rejected"
+          ? "Seu cadastro de motorista não foi aprovado. Entre em contato com o suporte para entender como regularizar as informações."
+          : "Seu cadastro de motorista está pendente de análise. Você poderá acessar a área de corridas depois que um administrador aprovar seu cadastro.";
+        return;
+      }
+      showOnly(appPanel);
+      document.getElementById("passengerTab").style.display = "none";
+      document.getElementById("driverTab").style.display = "block";
+      switchTab(true);
+    } else {
+      showOnly(appPanel);
+      document.getElementById("passengerTab").style.display = "block";
+      document.getElementById("driverTab").style.display = "none";
+      switchTab(false);
+    }
+  }
+
+  async function loadPendingDrivers() {
+    const list = document.getElementById("pendingDriversList");
+    list.innerHTML = '<div class="empty">Carregando cadastros...</div>';
+    const { data, error } = await sb.from("profiles")
+      .select("id,full_name,email,phone,vehicle_info,created_at")
+      .eq("account_type", "driver").eq("driver_status", "pending")
+      .order("created_at", { ascending: true });
+    if (error) {
+      list.innerHTML = '<div class="empty">Não foi possível carregar a lista. Verifique as políticas RLS e a configuração de administrador.</div>';
+      return;
+    }
+    if (!data || data.length === 0) {
+      list.innerHTML = '<div class="empty">Nenhum cadastro pendente no momento.</div>';
+      return;
+    }
+    list.innerHTML = data.map(driver => `
+      <article class="admin-driver">
+        <div><strong>${escapeHtml(driver.full_name)}</strong><div class="muted-line">${escapeHtml(driver.email)} · ${escapeHtml(driver.phone || "Sem telefone")}</div><div class="muted-line">Veículo: ${escapeHtml(driver.vehicle_info || "Não informado")}</div></div>
+        <div class="admin-actions"><button class="primary" data-driver="${driver.id}" data-status="approved">Aprovar</button><button class="danger" data-driver="${driver.id}" data-status="rejected">Rejeitar</button></div>
+      </article>`).join("");
+    list.querySelectorAll("button[data-driver]").forEach(button => button.addEventListener("click", async () => {
+      button.disabled = true;
+      const { error: updateError } = await sb.rpc("set_driver_status", {
+        p_driver_id: button.dataset.driver,
+        p_status: button.dataset.status
+      });
+      if (updateError) {
+        message("Não foi possível atualizar o cadastro: " + updateError.message, "error");
+        button.disabled = false; return;
+      }
+      message(button.dataset.status === "approved" ? "Motorista aprovado." : "Cadastro de motorista rejeitado.", "success");
+      await loadPendingDrivers();
+    }));
+  }
+  document.getElementById("refreshDrivers").addEventListener("click", loadPendingDrivers);
+  if (window.location.hash.includes("type=recovery")) setAuthMode("recovery");
+  if (!sb) {
+    message("Backend ainda não configurado. Preencha supabase-config.js e execute supabase/schema.sql para ativar contas, login, aprovação de motoristas e recuperação de senha.", "error");
+  } else {
+    sb.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setAuthMode("recovery");
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        Promise.resolve().then(() => loadAccount());
+      }
+    });
+    sb.auth.getSession().then(({ data }) => {
+      if (data.session) loadAccount();
+      else { showOnly(authPanel); setAuthMode(window.location.hash.includes("type=recovery") ? "recovery" : "login"); }
+    });
+  }
+})();
 </script></body></html>
