@@ -13,10 +13,6 @@ services:
         value: production
       - key: SESSION_SECRET
         generateValue: true
-      - key: INSTAGRAM_APP_ID
-        sync: false
-      - key: INSTAGRAM_APP_SECRET
-        sync: false
       - key: INSTAGRAM_API_VERSION
         value: v27.0
       - key: INSTAGRAM_SCOPES
