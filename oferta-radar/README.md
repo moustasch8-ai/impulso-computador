@@ -1,46 +1,38 @@
 # Oferta Radar
 
-Aplicativo público de ofertas e links de afiliado. Não exige cadastro, conta ou login para consultar ofertas, adicionar produtos ou guardar links.
+Aplicativo de ofertas e links de afiliado com vitrine pública e área pessoal protegida por conta.
 
-## O que está pronto no código
+## Recursos
 
-- Vitrine com busca, filtros por loja, categoria e desconto mínimo, e ordenação.
-- Amostra de demonstração claramente identificada com preços fictícios.
-- Formulário público de inclusão de produtos, com link original obrigatório e link de afiliado opcional.
-- Validação de links HTTP/HTTPS no navegador e no servidor.
-- Formulário público de links de afiliado; os links cadastrados ficam visíveis no mural público.
-- Contagem de cliques quando o redirecionamento passa pelo servidor.
-- Modo local para testes em GitHub Pages: os cadastros ficam apenas no navegador/dispositivo que os enviou.
-- Limite de 20 envios por hora por endereço IP no backend, para reduzir spam.
-- Página inicial de privacidade e termos para revisão antes do lançamento.
+- Vitrine de ofertas pública, com busca, filtros e ordenação.
+- Cadastro e entrada com nome, e-mail e senha exclusiva do Oferta Radar.
+- Senhas armazenadas com hash bcrypt; a API emite tokens assinados com validade de sete dias.
+- Área pessoal para guardar e excluir seus links de afiliado.
+- Publicação de ofertas identificadas pelo usuário responsável.
+- Painel individual com cliques em ofertas e links, além de comissões registradas manualmente.
+- Dados de links, publicações e comissões isolados por conta.
+- Validação de links HTTP/HTTPS e limite de tentativas de cadastro e entrada.
+- Interface responsiva com tema laranja e branco.
 
-## Sem cadastro: como funciona
+## Importante sobre a entrada
 
-O catálogo e o mural são compartilhados. Qualquer visitante pode enviar produtos e links; as informações cadastradas ficam públicas para todos. Não há área privada nem carteira de comissões nesta versão. Consulte vendas e comissões nos painéis oficiais dos programas de afiliados.
+A tela de entrar/criar conta está integrada ao front-end, mas a autenticação real depende do backend. No GitHub Pages, preencha \`window.OFERTA_RADAR_API_URL\` no arquivo \`config.js\` com a URL HTTPS do backend publicado. Enquanto a URL estiver vazia, o app mostra a vitrine de demonstração e informa que a API de contas ainda não foi ativada.
 
-No GitHub Pages, sem a URL do backend configurada em config.js, os formulários usam armazenamento local do navegador. Isso não publica o conteúdo para outros visitantes e não sincroniza dispositivos. Para que um produto enviado apareça para todos, publique o backend.
+O token de acesso é enviado no cabeçalho Authorization. O servidor valida a assinatura e o prazo de validade em cada solicitação. Senhas nunca são devolvidas pela API ou exibidas na interface.
 
-## Pré-visualização
-
-https://moustasch8-ai.github.io/impulso-computador/oferta-radar/
-
-O catálogo poderá mostrar exemplos fictícios para pré-visualização; eles são marcados como demonstração e não têm links de compra.
-
-## Executar com backend
+## Executar localmente
 
 Requer Node.js 20 ou superior.
 
-1. Entre na pasta oferta-radar/backend.
-2. Execute npm install.
-3. Copie .env.example para .env.
-4. Execute npm start.
-5. Abra http://localhost:3000.
-
-O backend serve a interface e a API no mesmo domínio. A API pública não cria contas nem solicita senhas.
+1. Entre em \`oferta-radar/backend\`.
+2. Execute \`npm install\`.
+3. Copie \`.env.example\` para \`.env\` e configure \`AUTH_SECRET\` com uma chave aleatória de pelo menos 32 caracteres.
+4. Execute \`npm start\`.
+5. Acesse \`http://localhost:3000\`.
 
 ## Publicar no Render
 
-O arquivo render.yaml contém uma configuração inicial de Web Service Node com disco persistente. Revise o plano e os custos no Render antes de aprovar a criação. O banco usa /var/data/oferta-radar.sqlite.
+O arquivo \`render.yaml\` cria um serviço Node com disco persistente e gera automaticamente o segredo \`AUTH_SECRET\`. Revise o plano e o custo no Render antes de criar o serviço. A URL final do backend deve ser colocada em \`oferta-radar/config.js\` e o site estático deve ser publicado novamente no GitHub Pages.
 
 ## Programas oficiais de afiliados
 
@@ -49,29 +41,10 @@ O arquivo render.yaml contém uma configuração inicial de Web Service Node com
 - Shopee Afiliados: https://affiliate.shopee.com.br/
 - Lomadee: https://www.lomadee.com.br/pt-br/afiliados
 
-Inscreva-se diretamente no parceiro, aguarde aprovação e gere seu link no portal oficial. O Oferta Radar não pede nem guarda senhas dessas plataformas.
+A inscrição e aprovação são feitas diretamente com cada parceiro. O Oferta Radar não guarda senhas dessas plataformas. Vendas e comissões não são importadas automaticamente: informe no painel apenas valores conferidos no portal oficial.
 
-## Ofertas e preços
+## Ofertas e transparência
 
-A primeira versão não faz scraping. O catálogo é alimentado por envios manuais. A importação automática de produtos, preços, imagens, estoque, cupons ou comissões precisa usar APIs ou feeds autorizados, respeitando termos, limites e políticas de cada parceiro.
+O catálogo de demonstração contém valores fictícios e está marcado como exemplo. A primeira versão não importa automaticamente preços, imagens, estoque ou cupons. Produtos reais precisam ser enviados manualmente, com informações verificadas.
 
-## Transparência e segurança
-
-- O envio é público e não exige cadastro.
-- Links enviados ficam visíveis a todos os visitantes.
-- O servidor limita envios por IP, mas não substitui moderação.
-- Links são validados quanto à sintaxe e aos protocolos HTTP/HTTPS; isso não garante que o destino seja seguro, permaneça ativo ou pertença à loja declarada.
-- Preços, cupons e disponibilidade devem ser conferidos no destino antes de divulgar.
-- Cliques são contabilizados apenas quando passam pelo redirecionador do servidor.
-- Vendas e comissões precisam ser conferidas nos painéis oficiais dos parceiros.
-- Revise os documentos legais, a LGPD, retenção de dados e canal de contato antes de abrir ao público.
-
-
-## Integração GitHub Pages + API
-
-- A página carrega config.js antes do aplicativo.
-- Configure window.OFERTA_RADAR_API_URL com a URL HTTPS do backend após o deploy.
-- O backend habilita CORS somente para os domínios em FRONTEND_ORIGINS.
-- O workflow de Pages copia config.js e valida a sintaxe de config.js, app.js e backend/server.js.
-- Quando a API está ativa, produtos e links são compartilhados e os redirecionamentos /go/:id e /r/:id registram cliques.
-- Sem API, o navegador salva os itens localmente; isso não equivale a um catálogo público compartilhado.
+Os links publicados são públicos e podem gerar comissão para quem os divulga. A validação de URL verifica apenas formato e protocolo; não garante que o destino seja autêntico ou seguro. Revise os documentos legais e a política de privacidade antes da abertura ao público.
