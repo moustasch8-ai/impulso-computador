@@ -21,20 +21,20 @@ alter table public.profiles enable row level security;
 revoke all on table public.profiles from anon, authenticated;
 grant select on table public.profiles to authenticated;
 
-drop policy if exists "profiles_select_own_or_admin" on public.profiles;
-create policy "profiles_select_own_or_admin"
-on public.profiles for select to authenticated
-using (id = (select auth.uid()) or (select public.is_admin()));
-
 create or replace function public.is_admin()
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
-as $$
+as $
   select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
-$$;
+$;
+
+drop policy if exists "profiles_select_own_or_admin" on public.profiles;
+create policy "profiles_select_own_or_admin"
+on public.profiles for select to authenticated
+using (id = (select auth.uid()) or (select public.is_admin()));
 
 create or replace function public.handle_new_user()
 returns trigger
