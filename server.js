@@ -10,7 +10,7 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const API_VERSION = process.env.INSTAGRAM_API_VERSION || 'v27.0';
 const PUBLIC_BASE_URL = process.env.RENDER_EXTERNAL_URL || 'http://localhost:' + PORT;
-const REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI || PUBLIC_BASE_URL.replace(/\\/$/, '') + '/auth/instagram/callback';
+const REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI || PUBLIC_BASE_URL + '/auth/instagram/callback';
 const SCOPES = process.env.INSTAGRAM_SCOPES || 'instagram_business_basic,instagram_business_manage_insights';
 const isProduction = process.env.NODE_ENV === 'production';
 
