@@ -58,6 +58,7 @@ function authMode(mode){
  const signup=mode==="signup";
  $("#nameWrap").classList.toggle("hidden",!signup);
  $("#authName").required=signup;
+ $("#authForm").classList.toggle("signup",signup);
  $("#authPassword").autocomplete=signup?"new-password":"current-password";
  $("#authTitle").textContent=signup?"Crie sua conta":"Entre na sua conta";
  $("#authDesc").textContent=signup?"Cadastre-se gratuitamente para guardar seus links, publicar ofertas e ver seus resultados.":"Acesse seus links, publicações e resultados.";
@@ -192,7 +193,7 @@ async function addCommission(event){
 }
 function bind(){
  $$(".nav,[data-page]").forEach(button=>button.addEventListener("click",()=>page(button.dataset.page)));
- $$("[data-auth]").forEach(button=>button.addEventListener("click",()=>openAuth("login",state.page)));
+ $("[data-auth]").forEach(button=>button.addEventListener("click",()=>openAuth(button.dataset.auth==="signup"?"signup":"login",state.page)));
  $$("[data-close]").forEach(button=>button.addEventListener("click",closeAuth));
  $("#accountButton").addEventListener("click",()=>state.user?logout():openAuth());
  $("#authForm").addEventListener("submit",submitAuth);
