@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="description" content="Impulso é um espaço para criadores descobrirem pessoas, desenvolverem conteúdo e construírem conexões reais.">
+  <meta property="og:title" content="Impulso — cresça com intenção">
+  <meta property="og:description" content="Descubra criadores, participe de desafios e fortaleça sua comunidade.">
+  <meta property="og:type" content="website">
+  <title>Impulso — cresça com intenção</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0f14;--panel:#111a20;--line:#29343b;--text:#eef3ef;--muted:#a0aca4;--lime:#c5f36b;--lime2:#d8ff91;--max:1160px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif}a{color:inherit;text-decoration:none}button{font:inherit}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}
+    .top{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #202a31}.brand{display:flex;align-items:center;gap:11px;font:800 25px Manrope;letter-spacing:-1.2px}.mark{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:var(--lime);color:#17210d;font:800 25px Manrope}.brand span:last-child em{color:var(--lime);font-style:normal}.nav{display:flex;gap:29px;color:#b1bdb5;font-size:12px}.nav a:hover{color:var(--lime)}.nav-actions{display:flex;gap:10px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:10px;padding:13px 18px;font-size:12px;font-weight:700;transition:.2s}.btn:hover{transform:translateY(-2px)}.btn.primary{background:var(--lime);color:#17210d}.btn.primary:hover{background:var(--lime2)}.btn.ghost{border:1px solid #3b4740;color:#e2e9e3;background:transparent}.btn.ghost:hover{border-color:var(--lime);color:var(--lime)}.menu{display:none;background:none;border:1px solid var(--line);border-radius:9px;color:white;padding:8px 11px}
+    .hero{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:55px;padding:88px 0 90px;min-height:630px}.eyebrow{display:flex;align-items:center;gap:10px;color:var(--lime);font-weight:700;font-size:10px;letter-spacing:1.7px}.eyebrow:before{content:"";width:23px;height:1px;background:var(--lime)}h1,h2,h3,p{margin-top:0}h1{font:800 clamp(47px,6vw,76px)/1.02 Manrope;letter-spacing:-4px;margin:21px 0 20px}h1 span,h2 span{color:var(--lime)}.hero-copy>p{color:#a9b5ad;line-height:1.75;font-size:15px;max-width:525px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.trust-note{display:flex;align-items:center;gap:9px;margin-top:22px;color:#87948c;font-size:10px}.trust-note b{color:#c9d4cc;font-weight:600}.trust-dot{width:6px;height:6px;background:var(--lime);border-radius:50%}
+    .visual{height:405px;position:relative;display:grid;place-items:center}.visual-glow{position:absolute;width:350px;height:350px;border-radius:50%;background:#b5e95b12;filter:blur(35px)}.ring{position:absolute;border:1px solid #354436;border-radius:50%;transform:rotate(-25deg)}.r1{width:430px;height:245px}.r2{width:320px;height:380px;transform:rotate(55deg)}.spark{position:absolute;color:var(--lime);font-size:21px}.s1{top:40px;left:62px}.s2{right:35px;bottom:49px}.core{position:relative;width:93px;height:93px;display:grid;place-items:center;border-radius:29px;background:var(--lime);color:#18220e;font:800 61px Manrope;box-shadow:0 0 80px #c5f36b35;z-index:2}.float-card{position:absolute;z-index:3;border:1px solid #344238;background:#131d20ed;border-radius:15px;padding:15px 17px;box-shadow:0 20px 50px #0005}.float-card.one{top:48px;right:6px;width:185px}.float-card.two{bottom:42px;left:3px;width:201px}.float-label{color:#91a096;font-size:9px;letter-spacing:1px}.float-number{font:800 24px Manrope;color:var(--lime);margin:8px 0 3px}.float-caption{font-size:10px;color:#b2beb6}.avatars{display:flex;margin-top:12px}.avatars i{width:27px;height:27px;border:2px solid #131d20;border-radius:50%;display:grid;place-items:center;margin-right:-6px;font-style:normal;font-size:8px;background:#42533f;color:#e9f5df}.avatar-note{font-size:9px;color:#9eaaa3;margin-top:8px}
+    .strip{border-block:1px solid #202a31;background:#0e1419}.strip-inner{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.strip-kicker{font-size:9px;letter-spacing:1.4px;color:#819087}.strip-item{display:flex;align-items:center;gap:9px;font-size:11px;color:#c5cec8}.strip-item b{font-size:16px;color:var(--lime)}
+    section.content{padding:94px 0}.section-head{max-width:680px;margin-bottom:38px}.section-head h2{font:800 clamp(32px,4vw,47px)/1.12 Manrope;letter-spacing:-2px;margin:14px 0}.section-head p{color:#a4b0a8;line-height:1.7;font-size:13px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{border:1px solid var(--line);background:linear-gradient(140deg,#131d23,#0f171c);border-radius:17px;padding:23px;min-height:205px}.feature-icon{width:42px;height:42px;border-radius:13px;background:#c5f36b15;display:grid;place-items:center;color:var(--lime);font-size:21px}.feature h3{font:700 16px Manrope;margin:19px 0 8px}.feature p{font-size:11px;line-height:1.7;color:#9eaaa3;margin:0}.how{background:#111a20;border-block:1px solid #253038}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}.step{border-top:1px solid #40503f;padding-top:19px}.step-no{color:var(--lime);font:800 13px Manrope}.step h3{font:700 17px Manrope;margin:17px 0 8px}.step p{color:#9eaaa3;font-size:11px;line-height:1.7}.honesty{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px;align-items:start}.honesty-card{border:1px solid #344535;background:#142019;border-radius:17px;padding:23px}.honesty-card h3{font:700 18px Manrope;margin:0 0 12px}.honesty-card p{font-size:11px;color:#a6b2a9;line-height:1.8;margin:0}.honesty-list{display:grid;gap:15px}.honesty-item{display:flex;gap:13px}.honesty-item b{color:var(--lime);font-size:17px}.honesty-item strong{font-size:12px}.honesty-item p{font-size:10px;color:#99a69e;line-height:1.6;margin:4px 0 0}
+    .cta{padding:0 0 95px}.cta-box{border:1px solid #45583b;border-radius:22px;padding:43px;display:flex;align-items:center;justify-content:space-between;gap:25px;background:radial-gradient(circle at 75% 40%,#c5f36b15,transparent 34%),linear-gradient(115deg,#18251d,#121c20)}.cta-box h2{font:800 35px/1.12 Manrope;letter-spacing:-1.4px;margin:11px 0}.cta-box p{color:#a4b0a8;font-size:12px;margin:0}.cta-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.faq details{border:1px solid var(--line);background:#111920;border-radius:13px;padding:17px}.faq summary{cursor:pointer;list-style:none;font-size:12px;font-weight:700}.faq summary::-webkit-details-marker{display:none}.faq summary:after{content:"+";float:right;color:var(--lime);font-size:18px}.faq details[open] summary:after{content:"−"}.faq details p{font-size:11px;color:#9faca4;line-height:1.7;margin:13px 0 0}
+    footer{border-top:1px solid #222d34;padding:27px 0;color:#85928a;font-size:10px}.foot{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.foot strong{color:#dce5dd}.foot-links{display:flex;gap:18px}.foot a:hover{color:var(--lime)}
+    @media(max-width:850px){.nav{gap:15px}.hero{gap:20px;padding:65px 0}.visual{transform:scale(.88)}.features{grid-template-columns:repeat(2,1fr)}.honesty{grid-template-columns:1fr;gap:25px}.cta-box{align-items:flex-start;flex-direction:column}}
+    @media(max-width:620px){.wrap{width:min(var(--max),calc(100% - 32px))}.top{height:68px}.nav{display:none;position:absolute;top:68px;left:0;right:0;padding:18px 22px;background:#111a20;border-bottom:1px solid var(--line);z-index:10;flex-direction:column}.nav.open{display:flex}.nav-actions .ghost{display:none}.menu{display:block}.brand{font-size:22px}.hero{grid-template-columns:1fr;padding:57px 0 46px;gap:0}.hero h1{font-size:53px;letter-spacing:-3px}.visual{height:300px;transform:scale(.82);margin-top:-5px}.strip-inner{padding:17px 0;justify-content:flex-start}.strip-kicker{width:100%}.strip-item{width:calc(50% - 10px)}section.content{padding:68px 0}.features,.steps,.faq-grid{grid-template-columns:1fr}.feature{min-height:auto}.cta{padding-bottom:68px}.cta-box{padding:26px}.cta-box h2{font-size:29px}.foot{align-items:flex-start;flex-direction:column}.foot-links{flex-wrap:wrap}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+  <header class="wrap top">
+    <a class="brand" href="#" aria-label="Impulso início"><span class="mark">i</span><span>impulso<em>.</em></span></a>
+    <nav class="nav" id="nav"><a href="#recursos">Recursos</a><a href="#como-funciona">Como funciona</a><a href="#transparencia">Transparência</a><a href="#duvidas">Dúvidas</a></nav>
+    <div class="nav-actions"><a class="btn ghost" href="https://github.com/moustasch8-ai/impulso-computador" target="_blank" rel="noopener">Ver no GitHub ↗</a><a class="btn primary" href="painel/">Abrir plataforma <span>→</span></a><button class="menu" id="menu" aria-label="Abrir menu">☰</button></div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div class="hero-copy">
+        <div class="eyebrow">CRESCIMENTO COM INTENÇÃO</div>
+        <h1>Seu conteúdo.<br>Sua comunidade.<br><span>Seu impulso.</span></h1>
+        <p>Um espaço para descobrir criadores, trocar referências e transformar boas ideias em conexões reais. Cresça com estratégia — sem atalhos artificiais.</p>
+        <div class="hero-actions"><a class="btn primary" href="painel/">Conhecer a plataforma <span>→</span></a><a class="btn ghost" href="#como-funciona">Como funciona <span>↘</span></a></div>
+        <div class="trust-note"><span class="trust-dot"></span><b>Sem bots. Sem promessas falsas.</b> Só conexões e conteúdo de verdade.</div>
+      </div>
+      <div class="visual" aria-label="Ilustração do painel do Impulso">
+        <div class="visual-glow"></div><div class="ring r1"></div><div class="ring r2"></div><span class="spark s1">✦</span><span class="spark s2">✧</span>
+        <div class="core">i</div>
+        <div class="float-card one"><div class="float-label">IDEIAS EM MOVIMENTO</div><div class="float-number">+ Criatividade</div><div class="float-caption">Conteúdo que aproxima pessoas.</div></div>
+        <div class="float-card two"><div class="float-label">CONEXÕES REAIS</div><div class="avatars"><i>LM</i><i>RP</i><i>BM</i><i>JC</i></div><div class="avatar-note">Cada criador tem algo para compartilhar.</div></div>
+      </div>
+    </section>
+
+    <div class="strip"><div class="wrap strip-inner"><span class="strip-kicker">FEITO PARA QUEM CRIA</span><span class="strip-item"><b>✧</b> Descobrir pessoas</span><span class="strip-item"><b>◎</b> Criar com consistência</span><span class="strip-item"><b>↗</b> Aprender com métricas</span><span class="strip-item"><b>♡</b> Construir comunidade</span></div></div>
+
+    <section class="wrap content" id="recursos">
+      <div class="section-head"><div class="eyebrow">UM KIT PARA CRIADORES</div><h2>Mais clareza para criar.<br><span>Mais espaço para conectar.</span></h2><p>O Impulso reúne ferramentas simples para organizar sua jornada como criador e conhecer pessoas com interesses parecidos.</p></div>
+      <div class="features">
+        <article class="feature"><div class="feature-icon">⌕</div><h3>Descubra criadores</h3><p>Explore categorias e encontre referências para aprender, conversar e trocar experiências.</p></article>
+        <article class="feature"><div class="feature-icon">✳</div><h3>Desafios práticos</h3><p>Pequenas tarefas para tirar ideias do papel e manter uma rotina que faça sentido para você.</p></article>
+        <article class="feature"><div class="feature-icon">✧</div><h3>Dicas de conteúdo</h3><p>Orientações para melhorar seus vídeos, contar histórias e conversar com sua audiência.</p></article>
+        <article class="feature"><div class="feature-icon">♧</div><h3>Seu painel de conexões</h3><p>Organize perfis salvos e registre manualmente quem confirmou que conheceu seu perfil pelo Impulso.</p></article>
+        <article class="feature"><div class="feature-icon">◎</div><h3>Sugestões por assunto</h3><p>Encontre buscas públicas por hashtags e descubra comunidades do seu nicho no Instagram.</p></article>
+        <article class="feature"><div class="feature-icon">↗</div><h3>Métricas com contexto</h3><p>Prepare-se para acompanhar dados de contas profissionais pela API oficial, quando a conexão estiver configurada.</p></article>
+      </div>
+    </section>
+
+    <section class="how" id="como-funciona">
+      <div class="wrap content">
+        <div class="section-head"><div class="eyebrow">SIMPLES PARA COMEÇAR</div><h2>Um passo de cada vez.<br><span>Com intenção.</span></h2><p>Use o painel como ponto de partida para descobrir o que funciona para sua criação.</p></div>
+        <div class="steps">
+          <article class="step"><span class="step-no">01 / EXPLORE</span><h3>Descubra referências</h3><p>Pesquise criadores, temas e formatos que conversam com os assuntos que você gosta.</p></article>
+          <article class="step"><span class="step-no">02 / CRIE</span><h3>Experimente uma ideia</h3><p>Escolha um desafio, publique algo original e converse com quem interagir de verdade.</p></article>
+          <article class="step"><span class="step-no">03 / APRENDA</span><h3>Observe e melhore</h3><p>Quando conectar uma conta profissional, use as métricas disponíveis para entender seu conteúdo.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap content" id="transparencia">
+      <div class="honesty">
+        <div class="section-head"><div class="eyebrow">CRESCIMENTO RESPONSÁVEL</div><h2>Sem truques.<br><span>Sem números inventados.</span></h2><p>O Impulso é uma ferramenta de apoio para criadores — não um serviço de venda de seguidores.</p></div>
+        <div class="honesty-list">
+          <div class="honesty-item"><b>✓</b><div><strong>Você mantém o controle</strong><p>Nenhuma ação automática de seguir, curtir, comentar ou reproduzir vídeos é executada.</p></div></div>
+          <div class="honesty-item"><b>✓</b><div><strong>Confirmações são transparentes</strong><p>O painel de seguidores é um registro manual, não uma lista oficial fornecida pelo Instagram.</p></div></div>
+          <div class="honesty-item"><b>✓</b><div><strong>Conexão oficial, quando habilitada</strong><p>A integração de métricas requer autorização da Meta e uma conta profissional elegível.</p></div></div>
+          <div class="honesty-item"><b>✓</b><div><strong>Sem prometer resultados</strong><p>O alcance depende de vários fatores. O Impulso oferece ferramentas e ideias, não garante seguidores ou visualizações.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap cta">
+      <div class="cta-box"><div><div class="eyebrow">SEU PRÓXIMO PASSO COMEÇA AQUI</div><h2>Uma boa ideia merece<br><span>ganhar espaço.</span></h2><p>Entre no painel e explore o que o Impulso já oferece.</p></div><div class="cta-actions"><a class="btn primary" href="painel/">Abrir o Impulso →</a><a class="btn ghost" href="https://github.com/moustasch8-ai/impulso-computador" target="_blank" rel="noopener">Código no GitHub ↗</a></div></div>
+    </section>
+
+    <section class="wrap content faq" id="duvidas">
+      <div class="section-head"><div class="eyebrow">PERGUNTAS FREQUENTES</div><h2>O que você precisa<br><span>saber.</span></h2></div>
+      <div class="faq-grid">
+        <details><summary>O Impulso garante novos seguidores?</summary><p>Não. O Impulso oferece descoberta, desafios e ferramentas para ajudar na criação de conteúdo. O crescimento depende do conteúdo, do público e das decisões de cada criador.</p></details>
+        <details><summary>O aplicativo pede minha senha do Instagram?</summary><p>Não. Quando a conexão oficial estiver disponível, você autorizará o acesso na própria página da Meta/Instagram. Nunca informe sua senha dentro do Impulso.</p></details>
+        <details><summary>Os perfis da demonstração são pessoas reais?</summary><p>Não. Os perfis mostrados na demonstração são exemplos fictícios, usados apenas para apresentar a interface.</p></details>
+        <details><summary>O painel de seguidores é sincronizado com o Instagram?</summary><p>Não. As confirmações são registradas manualmente. A API do Instagram não fornece ao Impulso uma lista de seguidores obtidos especificamente pelo app.</p></details>
+        <details><summary>Posso usar no celular?</summary><p>O site e o painel têm layout responsivo para telas menores. Uma versão Android nativa é um projeto separado.</p></details>
+        <details><summary>Onde está o código-fonte?</summary><p>O projeto é aberto no GitHub. Você pode consultar os arquivos, acompanhar as alterações e ler o guia de instalação no repositório.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap foot"><div>© 2026 <strong>Impulso.</strong> Crescimento com intenção.</div><div class="foot-links"><a href="painel/">Abrir plataforma</a><a href="https://github.com/moustasch8-ai/impulso-computador" target="_blank" rel="noopener">GitHub ↗</a><a href="#transparencia">Transparência</a></div><div>Sem bots. Sem promessas falsas. <strong>✦</strong></div></div></footer>
+  <script>const menu=document.getElementById('menu'),nav=document.getElementById('nav');menu.addEventListener('click',()=>nav.classList.toggle('open'));nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));</script>
+</body>
+</html>
