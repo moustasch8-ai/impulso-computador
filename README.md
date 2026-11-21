@@ -102,3 +102,25 @@ Este projeto está em [moustasch8-ai/impulso-computador](https://github.com/mous
 - [Instagram Platform — documentação oficial](https://developers.facebook.com/docs/instagram-platform/)
 - [Instagram API with Instagram Login](https://developers.facebook.com/docs/instagram-platform/instagram-api-with-instagram-login/)
 - [Meta for Developers](https://developers.facebook.com/)
+
+
+## Site público (GitHub Pages)
+
+O site institucional está em `site/` e a demonstração do painel em `site/painel/`.
+
+- Página inicial: https://moustasch8-ai.github.io/impulso-computador/
+- Demonstração do painel: https://moustasch8-ai.github.io/impulso-computador/painel/
+- Código-fonte: https://github.com/moustasch8-ai/impulso-computador
+
+### Ativar a publicação
+
+1. Abra **Settings → Pages** no repositório.
+2. Em **Build and deployment → Source**, selecione **GitHub Actions**.
+3. Abra a aba **Actions** e acompanhe o workflow **Publish Impulso website**.
+4. Quando a execução terminar com sucesso, o site estará disponível no endereço acima.
+
+O workflow `.github/workflows/pages.yml` publica automaticamente o conteúdo da pasta `site/` sempre que ela for atualizada na branch `main`. Esta configuração segue o fluxo recomendado pelo GitHub Pages.
+
+### Limites da demonstração hospedada
+
+O GitHub Pages hospeda apenas arquivos estáticos. A demonstração permite navegar pelo painel e guardar algumas preferências no armazenamento local do navegador. A autenticação OAuth e as chamadas reais à API do Instagram precisam do servidor Node.js configurado e hospedado separadamente; por segurança, o App Secret e tokens nunca devem ser colocados nos arquivos publicados do Pages.
