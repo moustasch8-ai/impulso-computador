@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'site/**'
+      - 'oferta-radar/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -29,6 +30,12 @@ jobs:
         uses: actions/checkout@v6
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
+      - name: Validate Oferta Radar scripts
+        run: node --check oferta-radar/app.js && node --check oferta-radar/backend/server.js
+      - name: Add Oferta Radar frontend to Pages
+        run: |
+          mkdir -p site/oferta-radar
+          cp oferta-radar/index.html oferta-radar/styles.css oferta-radar/app.js oferta-radar/privacidade.html oferta-radar/termos.html site/oferta-radar/
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v4
         with:
