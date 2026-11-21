@@ -18,7 +18,7 @@ Aplicativo público de ofertas e links de afiliado. Não exige cadastro, conta o
 
 O catálogo e o mural são compartilhados. Qualquer visitante pode enviar produtos e links; as informações cadastradas ficam públicas para todos. Não há área privada nem carteira de comissões nesta versão. Consulte vendas e comissões nos painéis oficiais dos programas de afiliados.
 
-No GitHub Pages, como não há backend, formulários usam armazenamento local do navegador. Isso não publica o conteúdo para outros visitantes e não sincroniza dispositivos. Para que um produto enviado apareça para todos, publique o backend.
+No GitHub Pages, sem a URL do backend configurada em config.js, os formulários usam armazenamento local do navegador. Isso não publica o conteúdo para outros visitantes e não sincroniza dispositivos. Para que um produto enviado apareça para todos, publique o backend.
 
 ## Pré-visualização
 
@@ -65,3 +65,13 @@ A primeira versão não faz scraping. O catálogo é alimentado por envios manua
 - Cliques são contabilizados apenas quando passam pelo redirecionador do servidor.
 - Vendas e comissões precisam ser conferidas nos painéis oficiais dos parceiros.
 - Revise os documentos legais, a LGPD, retenção de dados e canal de contato antes de abrir ao público.
+
+
+## Integração GitHub Pages + API
+
+- A página carrega config.js antes do aplicativo.
+- Configure window.OFERTA_RADAR_API_URL com a URL HTTPS do backend após o deploy.
+- O backend habilita CORS somente para os domínios em FRONTEND_ORIGINS.
+- O workflow de Pages copia config.js e valida a sintaxe de config.js, app.js e backend/server.js.
+- Quando a API está ativa, produtos e links são compartilhados e os redirecionamentos /go/:id e /r/:id registram cliques.
+- Sem API, o navegador salva os itens localmente; isso não equivale a um catálogo público compartilhado.
