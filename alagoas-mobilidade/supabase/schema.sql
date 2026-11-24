@@ -177,3 +177,8 @@ grant execute on function public.set_driver_status(uuid,text) to authenticated;
 grant select,insert,update,delete on public.ride_offers to authenticated;
 grant select on public.bookings,public.payments to authenticated;
 grant select,insert on public.reviews to authenticated;
+
+
+-- Trigger de criação automática do perfil para novas contas Auth.
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users for each row execute function public.handle_new_user();
