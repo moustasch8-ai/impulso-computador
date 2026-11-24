@@ -1,56 +1,60 @@
 # Alagoas Mobilidade
 
-Projeto de plataforma de mobilidade local planejada para atender os 102 municípios de Alagoas.
+Plataforma de caronas compartilhadas entre municípios de Alagoas e outros estados, com identidade própria e referência no modelo de viagens compartilhadas.
 
-## Recursos preparados nesta versão
-- Interface responsiva em português, com identidade visual laranja e branco.
-- Cadastro e login separados para passageiros e motoristas (Supabase Auth).
-- Confirmação de e-mail e recuperação de senha por e-mail.
-- Perfil criado automaticamente para cada conta.
-- Cadastro de motorista inicia como **pendente**.
-- Painel administrativo para aprovar ou rejeitar motoristas.
-- Regras de segurança no banco com Row Level Security (RLS); usuários só podem consultar seu próprio perfil, e somente administradores podem consultar e alterar a fila de aprovação.
-- Solicitação demonstrativa de corrida com escolha de pagamento em dinheiro, PIX ou cartão.
+## Funcionalidades implementadas
+- Interface responsiva em português, laranja e branco.
+- Cadastro e login via Supabase Auth.
+- Perfis de passageiro e motorista; motoristas iniciam pendentes e precisam de aprovação administrativa.
+- Publicação de caronas com origem/destino e UF, data/hora, assentos, preço por assento, veículo e observações.
+- Busca por cidade, estado, data e número de assentos.
+- Reserva transacional de assentos no PostgreSQL, com bloqueio concorrente.
+- Reservas pendentes de pagamento expiram após 15 minutos e liberam assentos quando o app executa a rotina de expiração.
+- Estrutura para pagamentos PIX/cartão via Mercado Pago Checkout Pro e webhook para confirmação.
+- Tabelas de avaliações para viagens concluídas.
+- RLS para perfis, ofertas, reservas, pagamentos e avaliações.
 
-## Ativar cadastro e login
+## Projeto conectado
+- Supabase: `lmddodyzurpxswvnfsnv` (região São Paulo).
+- Frontend usa apenas a chave pública publishable, protegida por RLS.
+- Site: https://alagoas-mobilidade.onrender.com
+- Repositório: https://github.com/moustasch8-ai/impulso-computador
 
-O repositório não contém credenciais de backend. Para ativar a autenticação:
+## Configuração de pagamentos
+As Edge Functions `create-checkout` e `mercado-pago-webhook` já estão publicadas no Supabase. Para ativar cobranças reais:
 
-1. Crie um projeto no [Supabase](https://supabase.com/).
-2. Abra **SQL Editor** no painel do Supabase e execute todo o conteúdo de `supabase/schema.sql`.
-3. Abra **Project Settings → API** e copie a URL do projeto e a chave pública (publishable/anon).
-4. Edite `supabase-config.js` e substitua os dois valores de exemplo pela URL e chave pública do seu projeto.
-5. Em **Authentication → URL Configuration**, configure a URL do site e adicione a URL publicada deste projeto à lista de Redirect URLs. O link de confirmação e recuperação retorna para a página do aplicativo.
-6. Publique/atualize o site e crie a primeira conta normalmente.
+1. Crie/valide sua aplicação e credenciais no [Mercado Pago Developers](https://www.mercadopago.com.br/developers/pt).
+2. No Supabase, abra **Edge Functions → Secrets** e adicione `MERCADOPAGO_ACCESS_TOKEN` com o Access Token de teste para homologação; depois troque para produção quando estiver pronto.
+3. Opcionalmente adicione `APP_SITE_URL=https://alagoas-mobilidade.onrender.com`.
+4. Configure no Mercado Pago a URL de notificações indicada pela função: `https://lmddodyzurpxswvnfsnv.supabase.co/functions/v1/mercado-pago-webhook`.
+5. Faça testes com contas e cartões/PIX de teste antes de receber valores reais.
 
-A chave pública (publishable/anon) é usada no navegador. **Nunca coloque a chave `service_role` no HTML, JavaScript ou GitHub.** O banco usa RLS para restringir os dados.
+**Atenção:** sem o secret `MERCADOPAGO_ACCESS_TOKEN`, o checkout retorna uma mensagem de configuração ausente e não cobra nada. Nesta primeira integração, o checkout recebe na conta Mercado Pago da plataforma. O repasse automático/split para cada motorista ainda depende de conectar as contas dos motoristas por OAuth e configurar o modelo marketplace apropriado. Não anuncie repasse automático antes dessa etapa.
 
-## Configurar a conta administradora
-
-1. Crie uma conta normal no aplicativo com o e-mail que será usado pela administração.
-2. No Supabase, abra o SQL Editor e execute o comando abaixo, trocando o e-mail pelo e-mail real da conta:
-
+## Administrador e aprovação de motoristas
+1. Crie uma conta normal no aplicativo.
+2. No SQL Editor do Supabase, atribua o papel de administrador à conta (substitua pelo e-mail correto):
 ```sql
 update auth.users
-set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
-  || jsonb_build_object('role', 'admin')
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || jsonb_build_object('role','admin')
 where lower(email) = lower('SEU_EMAIL_DE_ADMINISTRACAO');
 ```
+3. Saia e entre novamente. O painel administrativo permitirá aprovar ou rejeitar cadastros de motorista.
 
-3. Saia da conta no aplicativo e entre novamente. A conta passará a mostrar o painel administrativo.
+A aprovação do perfil não substitui a verificação documental de identidade, CNH e veículo. A equipe deve realizar essa conferência antes de liberar o motorista.
 
-Somente a conta marcada em `app_metadata` como administradora recebe permissão para aprovar ou rejeitar motoristas.
+## Banco de dados
+- `profiles`: perfis e aprovação.
+- `ride_offers`: caronas publicadas.
+- `bookings`: reservas e assentos.
+- `payments`: transações e estado do provedor.
+- `reviews`: avaliações.
+- `rides`: tabela legada de pedidos do protótipo anterior, preservada sem uso na nova experiência.
 
-## Importante sobre aprovação e segurança
+O arquivo `supabase/schema.sql` documenta a estrutura e as políticas da versão de caronas. A migração aplicada está em `supabase/migrations/20261124_carpool_marketplace.sql`.
 
-O painel permite aprovar ou rejeitar cadastros. A plataforma ainda não recebe nem valida automaticamente CNH, identidade ou documentos do veículo. A equipe deve fazer a conferência desses documentos por um processo seguro antes de aprovar o motorista. Não solicite documentos sensíveis por campos públicos ou mensagens abertas.
-
-## O que ainda não está operacional
-- Não há credenciais Supabase reais configuradas neste repositório; por isso, o login só funcionará depois dos passos de configuração acima.
-- Os pedidos de corrida atuais continuam sendo uma demonstração local no navegador; não são distribuídos a motoristas em outros celulares.
-- Não há despacho em tempo real, geolocalização, mapas, cálculo de tarifas, chat, notificações ou pagamentos reais.
-- A escolha de PIX/cartão ainda não gera cobrança. Para isso será necessário integrar um provedor de pagamentos por backend seguro.
-- Ainda é necessário construir a etapa de verificação documental, suporte, políticas de privacidade e revisão dos requisitos legais/regulatórios antes de operar comercialmente.
-
-## Publicação
-O projeto fica na pasta `alagoas-mobilidade/` do repositório principal. Configure o GitHub Pages para publicar o repositório e use o endereço da pasta do aplicativo para acessar a página.
+## Limitações antes de operar
+- O checkout depende de credenciais do Mercado Pago e testes reais em ambiente de homologação.
+- O split e repasse automático aos motoristas ainda não foi conectado via OAuth.
+- Ainda faltam mapas/geolocalização, notificações, chat, fluxo de cancelamento e reembolso completo, avaliação pela interface, suporte operacional e auditoria documental.
+- É necessário revisar os requisitos legais, tributários, de proteção de dados e regras aplicáveis ao transporte compartilhado em cada estado antes do lançamento comercial.
