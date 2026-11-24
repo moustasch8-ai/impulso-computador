@@ -1,321 +1,88 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f47721"><meta name="description" content="Plataforma de mobilidade local em Alagoas. Encontre motoristas e solicite corridas.">
-<title>Alagoas Mobilidade</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f47721">
+<meta name="description" content="Encontre e ofereça caronas compartilhadas entre Alagoas e outros estados.">
+<title>Alagoas Mobilidade — Caronas compartilhadas</title>
 <style>
-:root{--orange:#f47721;--orange-dark:#d95c0b;--ink:#202124;--muted:#697078;--line:#ece7e2;--bg:#fffaf6;--green:#16834b}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg)}
-header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.nav{max-width:1120px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:18px}.logo{width:38px;height:38px;border-radius:12px;background:var(--orange);color:white;display:grid;place-items:center;font-size:21px}.nav small{color:var(--muted)}
-main{max-width:1120px;margin:auto;padding:34px 20px 64px}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center;margin-bottom:30px}.eyebrow{color:var(--orange-dark);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(34px,5vw,54px);line-height:1.04;letter-spacing:-.04em;margin:12px 0}.hero p{color:var(--muted);font-size:17px;line-height:1.6;max-width:600px}.hero-art{min-height:230px;border-radius:26px;background:linear-gradient(135deg,#ffead9,#fff4eb);display:grid;place-items:center;position:relative;overflow:hidden}.road{width:78%;height:130px;border:13px dashed white;border-radius:50%;transform:rotate(-17deg);display:grid;place-items:center;color:var(--orange);font-size:55px}
-.panel{background:white;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 12px 35px #5d35100b}.tabs{display:flex;gap:8px;background:#fff5ed;padding:5px;border-radius:13px;margin-bottom:22px}.tab{flex:1;border:0;background:transparent;padding:12px;border-radius:10px;font-weight:750;color:#80543a;cursor:pointer}.tab.active{background:var(--orange);color:white}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}label{font-size:13px;font-weight:750}input,select,textarea{width:100%;border:1px solid #e5ddd6;border-radius:11px;padding:13px 12px;font:inherit;background:#fff;color:var(--ink);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f477211c}.primary{border:0;border-radius:12px;background:var(--orange);color:#fff;padding:14px 18px;font-size:15px;font-weight:800;cursor:pointer}.primary:hover{background:var(--orange-dark)}.secondary{border:1px solid #f2c6a7;background:#fff7f0;color:#a94b0a;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}.fullbtn{width:100%;margin-top:18px}.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}.section-title{margin:36px 0 14px;font-size:23px}.features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{background:#fff;border:1px solid var(--line);padding:18px;border-radius:17px}.feature .emoji{font-size:24px}.feature h3{margin:10px 0 6px;font-size:16px}.feature p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}.notice{background:#fff4e9;border:1px solid #f8d7bd;color:#7a411d;border-radius:14px;padding:14px;font-size:13px;line-height:1.55;margin-top:18px}.driver-view{display:none}.ride-list{display:grid;gap:10px;margin-top:14px}.ride{border:1px solid var(--line);padding:14px;border-radius:13px}.ride strong{display:block;margin-bottom:5px}.empty{padding:18px;border:1px dashed #e7d8cb;border-radius:13px;color:var(--muted);font-size:14px;text-align:center}
-footer{border-top:1px solid var(--line);background:white;padding:22px;text-align:center;color:var(--muted);font-size:12px}
-@media(max-width:760px){main{padding:24px 14px 45px}.hero{grid-template-columns:1fr}.hero-art{min-height:150px}.road{height:85px}.features{grid-template-columns:1fr}.panel{padding:17px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.nav{padding:11px 14px}}
-
-.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.auth-form{display:grid;gap:13px}.auth-form[hidden]{display:none}.auth-tabs{display:flex;gap:8px;background:#fff5ed;padding:5px;border-radius:13px;margin:16px 0}.auth-tabs button{flex:1;border:0;background:transparent;padding:11px;border-radius:10px;font-weight:750;color:#80543a;cursor:pointer}.auth-tabs button.active{background:var(--orange);color:white}.accountbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:13px 16px;background:#fff;border:1px solid var(--line);border-radius:14px}.status-message{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff4e9;color:#7a411d;font-size:13px;line-height:1.5}.status-message.success{background:#eaf8ef;color:#17623a}.status-message.error{background:#fff0f0;color:#9d2525}.admin-list{display:grid;gap:10px;margin-top:16px}.admin-driver{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--line);padding:14px;border-radius:13px}.admin-actions{display:flex;gap:8px;flex-wrap:wrap}.danger{border:1px solid #f0bcbc;background:#fff4f4;color:#9d2525;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer}.muted-line{font-size:12px;color:var(--muted);line-height:1.5}
-</style></head>
+:root{--orange:#f47721;--dark:#d95c0b;--ink:#242424;--muted:#697078;--line:#eee5de;--bg:#fffaf6;--green:#16834b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Arial,sans-serif}header{background:white;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.nav{max-width:1120px;margin:auto;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-weight:850;display:flex;align-items:center;gap:10px}.logo{background:var(--orange);color:white;border-radius:12px;width:38px;height:38px;display:grid;place-items:center}.muted{color:var(--muted)}main{max-width:1120px;margin:auto;padding:28px 18px 60px}.hero{background:linear-gradient(120deg,#fff0e5,#fff);border:1px solid #f8ddca;border-radius:24px;padding:30px;margin-bottom:22px}.eyebrow{color:var(--dark);font-weight:800;text-transform:uppercase;font-size:12px;letter-spacing:.12em}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin:10px 0}.hero p{color:var(--muted);max-width:700px;line-height:1.6}.panel{background:white;border:1px solid var(--line);border-radius:19px;padding:22px;margin-bottom:18px;box-shadow:0 10px 28px #5d35100a}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}label{font-weight:750;font-size:13px}input,select,textarea{width:100%;padding:12px;border:1px solid #e4dcd5;border-radius:10px;font:inherit;background:white}textarea{min-height:76px}.btn{border:0;background:var(--orange);color:white;padding:13px 17px;border-radius:11px;font-weight:800;cursor:pointer}.btn:hover{background:var(--dark)}.btn:disabled{opacity:.55;cursor:wait}.btn.secondary{background:#fff4eb;color:#a94b0a;border:1px solid #f2c6a7}.btn.ghost{background:white;color:var(--dark);border:1px solid #f2c6a7}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.tabs{display:flex;gap:8px;background:#fff4eb;padding:5px;border-radius:12px;margin-bottom:18px}.tabs button{flex:1;border:0;background:transparent;padding:11px;border-radius:9px;font-weight:800;color:#80543a;cursor:pointer}.tabs button.active{background:var(--orange);color:white}.message{padding:12px;border-radius:11px;background:#fff4e9;color:#7a411d;margin:12px 0;font-size:13px;line-height:1.5}.message.error{background:#fff0f0;color:#9d2525}.message.success{background:#eaf8ef;color:#17623a}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}.ride{border:1px solid var(--line);border-radius:15px;padding:16px}.ride h3{margin:0 0 8px;font-size:18px}.price{font-size:21px;font-weight:850;color:var(--dark)}.ride p{font-size:13px;color:var(--muted);line-height:1.5;margin:7px 0}.tag{display:inline-block;background:#fff3e9;color:#a94b0a;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:800}.hide{display:none!important}.account{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.fine{font-size:12px;color:var(--muted);line-height:1.5}.empty{border:1px dashed #e6d7ca;border-radius:12px;padding:18px;text-align:center;color:var(--muted)}footer{text-align:center;border-top:1px solid var(--line);background:white;padding:22px;color:var(--muted);font-size:12px}
+@media(max-width:700px){main{padding:18px 12px 45px}.hero{padding:22px}.panel{padding:16px}.grid,.cards{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
 <body>
-<header><div class="nav"><div class="brand"><span class="logo">↗</span><span>Alagoas Mobilidade</span></div><small id="headerStatus">Acesse sua conta</small></div></header>
+<header><div class="nav"><div class="brand"><span class="logo">↗</span>Alagoas Mobilidade</div><small id="topStatus" class="muted">Caronas entre estados</small></div></header>
 <main>
-<section class="hero"><div><div class="eyebrow">Mobilidade em todo o estado</div><h1>Sua próxima corrida começa aqui.</h1><p>Uma ideia de plataforma para aproximar passageiros e motoristas de Alagoas, da capital ao interior.</p></div><div class="hero-art" aria-hidden="true"><div class="road">🚗</div></div></section>
-
-<section class="panel" id="authPanel">
-  <div class="eyebrow">Área segura do usuário</div>
-  <h2 style="margin:8px 0 4px">Entre ou crie sua conta</h2>
-  <p style="margin:0;color:var(--muted);font-size:14px">Use uma conta de passageiro ou motorista para acessar a plataforma.</p>
-  <div class="auth-tabs"><button type="button" id="loginTab" class="active">Entrar</button><button type="button" id="signupTab">Criar conta</button></div>
-  <form id="loginForm" class="auth-form">
-    <div class="field"><label for="loginEmail">E-mail</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="voce@email.com"></div>
-    <div class="field"><label for="loginPassword">Senha</label><input id="loginPassword" type="password" autocomplete="current-password" required minlength="8" placeholder="Sua senha"></div>
-    <button class="primary fullbtn" type="submit">Entrar na conta</button>
-    <button type="button" class="secondary" id="forgotPassword">Esqueci minha senha</button>
-  </form>
-  <form id="signupForm" class="auth-form" hidden>
-    <div class="auth-grid">
-      <div class="field"><label for="signupName">Nome completo</label><input id="signupName" required maxlength="100" autocomplete="name" placeholder="Seu nome"></div>
-      <div class="field"><label for="signupPhone">Celular</label><input id="signupPhone" required maxlength="25" autocomplete="tel" placeholder="(82) 99999-9999"></div>
-      <div class="field full"><label for="signupEmail">E-mail</label><input id="signupEmail" type="email" required autocomplete="email" placeholder="voce@email.com"></div>
-      <div class="field"><label for="signupPassword">Senha (mínimo 8 caracteres)</label><input id="signupPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Crie uma senha"></div>
-      <div class="field"><label for="signupType">Tipo de conta</label><select id="signupType"><option value="passenger">Passageiro</option><option value="driver">Motorista</option></select></div>
-      <div class="field full" id="vehicleField" hidden><label for="vehicleInfo">Veículo (modelo e ano)</label><input id="vehicleInfo" maxlength="100" placeholder="Ex.: Fiat Argo 2022"></div>
-    </div>
-    <button class="primary fullbtn" type="submit">Criar minha conta</button>
-    <p class="muted-line">Cadastros de motorista começam com status pendente e só liberam a área do motorista após aprovação administrativa.</p>
-  </form>
-  <form id="recoveryForm" class="auth-form" hidden>
-    <h3 style="margin:4px 0">Criar nova senha</h3>
-    <div class="field"><label for="newPassword">Nova senha</label><input id="newPassword" type="password" minlength="8" required autocomplete="new-password"></div>
-    <button class="primary" type="submit">Salvar nova senha</button>
-  </form>
-  <div id="authMessage" class="status-message" role="status" aria-live="polite">Conecte o projeto a um backend para ativar as contas.</div>
+<section class="hero"><div class="eyebrow">Viajar junto custa menos</div><h1>Encontre sua próxima carona.</h1><p>Conectamos passageiros e motoristas para compartilhar viagens entre Alagoas e outros estados. Compare horários, assentos e preços antes de reservar.</p><span class="tag">PIX e cartão pelo aplicativo</span></section>
+<section class="panel" id="auth">
+<div class="eyebrow">Sua conta</div><h2 id="authTitle">Entrar ou criar conta</h2>
+<div class="tabs"><button id="loginTab" class="active" type="button">Entrar</button><button id="signupTab" type="button">Criar conta</button></div>
+<form id="loginForm" class="grid">
+<div class="field full"><label>E-mail</label><input id="email" type="email" required autocomplete="email"></div>
+<div class="field full"><label>Senha</label><input id="password" type="password" required minlength="8" autocomplete="current-password"></div>
+<div class="field full"><button class="btn" type="submit">Entrar</button></div>
+</form>
+<form id="signupForm" class="grid hide">
+<div class="field"><label>Nome completo</label><input id="name" required maxlength="100"></div>
+<div class="field"><label>Celular</label><input id="phone" required maxlength="25"></div>
+<div class="field full"><label>E-mail</label><input id="newEmail" type="email" required></div>
+<div class="field"><label>Senha (mínimo 8)</label><input id="newPassword" type="password" minlength="8" required></div>
+<div class="field"><label>Quero me cadastrar como</label><select id="role"><option value="passenger">Passageiro</option><option value="driver">Motorista</option></select></div>
+<div class="field full hide" id="vehicleField"><label>Veículo (modelo, ano e cor)</label><input id="vehicle"></div>
+<div class="field full"><button class="btn" type="submit">Criar conta</button></div>
+</form>
+<div id="authMessage" class="message">Entre ou crie sua conta para pesquisar e publicar caronas.</div>
 </section>
-<div class="accountbar" id="accountBar" style="display:none"><div><strong id="accountName">Conta conectada</strong><div class="muted-line" id="accountDetail"></div></div><button type="button" class="secondary" id="logoutButton">Sair</button></div>
-
-<section class="panel" id="appPanel" style="display:none">
-<div class="tabs"><button class="tab active" id="passengerTab" type="button">Sou passageiro</button><button class="tab" id="driverTab" type="button">Sou motorista</button></div>
-<div id="passengerView">
-<h2 style="margin:0 0 6px">Solicitar uma corrida</h2><p style="margin:0 0 20px;color:var(--muted);font-size:14px">Informe os locais para registrar seu pedido de corrida.</p>
-<form id="rideForm"><div class="grid">
-<div class="field"><label for="fromCity">Cidade de partida</label><select id="fromCity" required></select></div>
-<div class="field"><label for="toCity">Cidade de destino</label><select id="toCity" required></select></div>
-<div class="field"><label for="pickup">Endereço de partida</label><input id="pickup" placeholder="Rua, número ou ponto de referência" required></div>
-<div class="field"><label for="destination">Endereço de destino</label><input id="destination" placeholder="Rua, número ou ponto de referência" required></div>
-<div class="field"><label for="when">Quando?</label><select id="when"><option>Agora</option><option>Agendar para mais tarde</option></select></div>
-<div class="field"><label for="people">Passageiros</label><select id="people"><option>1 passageiro</option><option>2 passageiros</option><option>3 passageiros</option><option>4 passageiros</option></select></div>
-<div class="field full"><label for="payment">Forma de pagamento</label><select id="payment" required><option value="Dinheiro">Dinheiro — pagar diretamente ao motorista</option><option value="PIX">PIX — pagamento digital</option><option value="Cartão">Cartão — crédito/débito</option></select></div>
-</div><button class="primary fullbtn" type="submit">Registrar pedido de corrida</button></form>
-<div class="hint">Nesta primeira versão, o pedido fica salvo somente neste navegador. Ainda não é enviado a motoristas reais e não confirma uma corrida.</div>
-<div id="confirmation" aria-live="polite"></div>
-</div>
-<div class="driver-view" id="driverView"><h2 style="margin:0 0 6px">Área do motorista</h2><p style="margin:0;color:var(--muted);font-size:14px">Veja os pedidos de demonstração registrados neste mesmo navegador.</p><div id="rideList" class="ride-list"><div class="empty">Nenhum pedido registrado por enquanto.</div></div><div class="notice">Para receber corridas de outros celulares, será necessário conectar o aplicativo a um servidor e banco de dados com contas verificadas.</div></div>
-</section>
-
-<section class="panel" id="pendingDriverPanel" style="display:none">
-  <h2 style="margin:0 0 8px">Cadastro recebido</h2>
-  <p>Seu cadastro de motorista está pendente de análise. Você poderá acessar a área de corridas depois que um administrador aprovar seu cadastro.</p>
-  <div class="notice">A aprovação administrativa é uma etapa de controle do aplicativo. A conferência de identidade, habilitação e documentação do veículo precisa ser feita pela equipe antes da aprovação.</div>
-</section>
-<section class="panel" id="adminPanel" style="display:none">
-  <div class="row" style="align-items:center;justify-content:space-between;gap:12px"><div><h2 style="margin:0">Painel administrativo</h2><p class="muted-line">Revise os cadastros pendentes de motoristas.</p></div><button type="button" class="secondary" id="refreshDrivers">Atualizar lista</button></div>
-  <div id="adminMessage" class="status-message" role="status" aria-live="polite" hidden></div><div id="pendingDriversList" class="admin-list"><div class="empty">Carregando cadastros...</div></div>
-</section>
-
-<h2 class="section-title">Feito para conectar Alagoas</h2><section class="features">
-<div class="feature"><div class="emoji">📍</div><h3>Corridas entre cidades</h3><p>Planejado para atender municípios da região metropolitana, litoral, agreste e sertão.</p></div>
-<div class="feature"><div class="emoji">🤝</div><h3>Passageiros e motoristas</h3><p>Experiência dedicada para quem precisa viajar e para quem oferece transporte.</p></div>
-<div class="feature"><div class="emoji">🛡️</div><h3>Segurança em primeiro lugar</h3><p>Próximas etapas incluem verificação de motoristas, suporte e recursos de segurança.</p></div>
-</section>
-<div class="notice"><strong>Importante:</strong> este é o protótipo inicial da interface. Antes de operar comercialmente, será preciso implementar autenticação segura, banco de dados compartilhado, localização/mapas, comunicação em tempo real, integração real de pagamentos PIX e cartão, suporte e revisão das exigências legais e regulatórias aplicáveis ao transporte.</div>
-</main><footer>Alagoas Mobilidade · Protótipo em desenvolvimento · © 2026</footer>
+<section id="workspace" class="hide">
+<div class="panel account"><div><strong id="welcome"></strong><div id="accountInfo" class="fine"></div></div><button id="logout" class="btn secondary">Sair</button></div>
+<div id="pending" class="panel hide"><h2>Cadastro de motorista em análise</h2><p>Seu cadastro foi recebido. A equipe precisa aprovar seu perfil antes de você publicar caronas.</p><div class="fine">A aprovação não substitui a verificação de identidade, CNH e documentação do veículo.</div></div>
+<div id="appArea" class="hide">
+<div class="tabs"><button id="searchTab" class="active" type="button">Buscar carona</button><button id="publishTab" type="button">Oferecer carona</button><button id="myTab" type="button">Minhas reservas/viagens</button></div>
+<section id="searchView" class="panel"><h2>Para onde você vai?</h2><form id="searchForm" class="grid">
+<div class="field"><label>Origem — cidade</label><input id="origin" placeholder="Ex.: Maceió" required></div>
+<div class="field"><label>UF de origem</label><select id="originState"></select></div>
+<div class="field"><label>Destino — cidade</label><input id="destination" placeholder="Ex.: Recife" required></div>
+<div class="field"><label>UF de destino</label><select id="destinationState"></select></div>
+<div class="field"><label>Data da viagem</label><input id="travelDate" type="date" required></div>
+<div class="field"><label>Passageiros</label><select id="seats"><option value="1">1 assento</option><option value="2">2 assentos</option><option value="3">3 assentos</option><option value="4">4 assentos</option></select></div>
+<div class="field full"><button class="btn" type="submit">Pesquisar caronas</button></div></form><div id="results" class="cards"><div class="empty">Informe origem, destino e data para pesquisar.</div></div></section>
+<section id="publishView" class="panel hide"><h2>Publique sua viagem</h2><p class="fine">Informe os dados da viagem e o valor por assento. O valor deve representar uma contribuição razoável aos custos compartilhados, não uma tarifa de transporte profissional.</p>
+<form id="publishForm" class="grid">
+<div class="field"><label>Cidade de saída</label><input id="pOrigin" required placeholder="Maceió"></div><div class="field"><label>UF de saída</label><select id="pOriginState"></select></div>
+<div class="field"><label>Cidade de destino</label><input id="pDestination" required placeholder="Arapiraca"></div><div class="field"><label>UF de destino</label><select id="pDestinationState"></select></div>
+<div class="field"><label>Data e horário</label><input id="departure" type="datetime-local" required></div><div class="field"><label>Assentos disponíveis</label><select id="pSeats"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+<div class="field"><label>Valor por assento (R$)</label><input id="price" type="number" min="0" max="5000" step=".01" required></div><div class="field"><label>Veículo</label><input id="pVehicle" maxlength="100" placeholder="Modelo, ano e cor"></div>
+<div class="field full"><label>Detalhes, ponto de encontro e bagagem</label><textarea id="notes" maxlength="500"></textarea></div>
+<div class="field full"><button class="btn" type="submit">Publicar carona</button></div></form><div id="publishMessage"></div></section>
+<section id="myView" class="panel hide"><h2>Minhas reservas e viagens</h2><div id="myBookings" class="cards"><div class="empty">Carregando...</div></div></section>
+</div></section>
+<section class="panel"><h2>Como funciona</h2><div class="cards"><div><strong>1. Pesquise</strong><p class="fine">Encontre uma viagem que combine com seu trajeto e data.</p></div><div><strong>2. Reserve</strong><p class="fine">Escolha quantos assentos precisa e pague por PIX ou cartão no checkout seguro.</p></div><div><strong>3. Viaje junto</strong><p class="fine">Combine o ponto de encontro e avalie a experiência após a viagem.</p></div></div><div class="message">Pagamentos online dependem da configuração das credenciais comerciais do provedor. O app não confirma reservas nem cobra valores enquanto essa configuração não estiver concluída.</div></section>
+</main><footer>Alagoas Mobilidade · Plataforma de caronas compartilhadas · 2026</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 <script>
-const cities=["Água Branca","Anadia","Arapiraca","Atalaia","Barra de Santo Antônio","Barra de São Miguel","Batalha","Belém","Belo Monte","Boca da Mata","Branquinha","Cacimbinhas","Cajueiro","Campestre","Campo Alegre","Campo Grande","Canapi","Capela","Carneiros","Chã Preta","Coité do Nóia","Colônia Leopoldina","Coqueiro Seco","Coruripe","Craíbas","Delmiro Gouveia","Dois Riachos","Estrela de Alagoas","Feira Grande","Feliz Deserto","Flexeiras","Girau do Ponciano","Ibateguara","Igaci","Igreja Nova","Inhapi","Jacaré dos Homens","Jacuípe","Japaratinga","Jaramataia","Jequiá da Praia","Joaquim Gomes","Jundiá","Junqueiro","Lagoa da Canoa","Limoeiro de Anadia","Maceió","Major Isidoro","Mar Vermelho","Maragogi","Maravilha","Marechal Deodoro","Maribondo","Mata Grande","Matriz de Camaragibe","Messias","Minador do Negrão","Monteirópolis","Murici","Novo Lino","Olho d'Água das Flores","Olho d'Água do Casado","Olho d'Água Grande","Olivença","Ouro Branco","Palestina","Palmeira dos Índios","Pão de Açúcar","Pariconha","Paripueira","Passo de Camaragibe","Paulo Jacinto","Penedo","Piaçabuçu"," Pilar","Pindoba","Piranhas","Poço das Trincheiras","Porto Calvo","Porto de Pedras","Porto Real do Colégio","Quebrangulo","Rio Largo","Roteiro","Santa Luzia do Norte","Santana do Ipanema","Santana do Mundaú","São Brás","São José da Laje","São José da Tapera","São Luís do Quitunde","São Miguel dos Campos","São Miguel dos Milagres","São Sebastião","Satuba","Senador Rui Palmeira","Tanque d'Arca","Taquarana","Teotônio Vilela","Traipu","União dos Palmares","Viçosa"];
-const from=document.getElementById('fromCity'),to=document.getElementById('toCity');
-cities.forEach(c=>{const a=document.createElement('option');a.value=c.trim();a.textContent=c.trim();from.append(a);const b=document.createElement('option');b.value=c.trim();b.textContent=c.trim();to.append(b)});
-from.value="Cacimbinhas";to.value="Arapiraca";
-const passengerTab=document.getElementById('passengerTab'),driverTab=document.getElementById('driverTab'),passengerView=document.getElementById('passengerView'),driverView=document.getElementById('driverView');
-function switchTab(driver){passengerTab.classList.toggle('active',!driver);driverTab.classList.toggle('active',driver);passengerView.style.display=driver?'none':'block';driverView.style.display=driver?'block':'none';if(driver)renderRides()}
-passengerTab.addEventListener('click',()=>switchTab(false));driverTab.addEventListener('click',()=>switchTab(true));
-function getRides(){try{return JSON.parse(localStorage.getItem('alagoasMobilidadeRides')||'[]')}catch{return []}}
-document.getElementById('rideForm').addEventListener('submit',e=>{e.preventDefault();const ride={id:Date.now(),from:from.value,to:to.value,pickup:document.getElementById('pickup').value.trim(),destination:document.getElementById('destination').value.trim(),when:document.getElementById('when').value,people:document.getElementById('people').value,payment:document.getElementById('payment').value,created:new Date().toLocaleString('pt-BR')};const rides=getRides();rides.unshift(ride);localStorage.setItem('alagoasMobilidadeRides',JSON.stringify(rides));document.getElementById('confirmation').innerHTML='<div class="notice"><strong>Pedido registrado neste navegador!</strong><br>'+ride.from+' → '+ride.to+'. Pagamento escolhido: '+escapeHtml(ride.payment)+'. Isso é apenas uma demonstração; nenhum motorista foi notificado e nenhum pagamento foi cobrado.</div>';e.target.reset();from.value='Cacimbinhas';to.value='Arapiraca'});
-function renderRides(){const list=document.getElementById('rideList'),rides=getRides();if(!rides.length){list.innerHTML='<div class="empty">Nenhum pedido registrado por enquanto.</div>';return}list.innerHTML=rides.map(r=>'<article class="ride"><strong>'+escapeHtml(r.from)+' → '+escapeHtml(r.to)+'</strong><div>'+escapeHtml(r.pickup)+' até '+escapeHtml(r.destination)+'</div><small style="color:#697078">'+escapeHtml(r.when)+' · '+escapeHtml(r.people)+' · Pagamento: '+escapeHtml(r.payment||'Não informado')+' · '+escapeHtml(r.created)+'</small></article>').join('')}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script>
-(() => {
-  const config = window.ALAGOAS_SUPABASE_CONFIG || {};
-  const configured = config.url && config.anonKey && !String(config.url).includes("SEU-PROJETO") && !String(config.anonKey).includes("SUA_CHAVE");
-  const sb = configured && window.supabase ? window.supabase.createClient(config.url, config.anonKey) : null;
-  const authPanel = document.getElementById("authPanel");
-  const appPanel = document.getElementById("appPanel");
-  const pendingPanel = document.getElementById("pendingDriverPanel");
-  const adminPanel = document.getElementById("adminPanel");
-  const accountBar = document.getElementById("accountBar");
-  const authMessage = document.getElementById("authMessage");
-  const headerStatus = document.getElementById("headerStatus");
-  const loginForm = document.getElementById("loginForm");
-  const signupForm = document.getElementById("signupForm");
-  const recoveryForm = document.getElementById("recoveryForm");
-  let activeUser = null;
-
-  function message(text, type = "info") {
-    const className = "status-message" + (type === "success" ? " success" : type === "error" ? " error" : "");
-    authMessage.textContent = text;
-    authMessage.className = className;
-    const adminMessage = document.getElementById("adminMessage");
-    if (adminMessage && adminPanel.style.display === "block") {
-      adminMessage.textContent = text;
-      adminMessage.className = className;
-      adminMessage.hidden = false;
-    }
-  }
-  function setAuthMode(mode) {
-    loginForm.hidden = mode !== "login";
-    signupForm.hidden = mode !== "signup";
-    recoveryForm.hidden = mode !== "recovery";
-    document.getElementById("loginTab").classList.toggle("active", mode === "login");
-    document.getElementById("signupTab").classList.toggle("active", mode === "signup");
-  }
-  function showOnly(element) {
-    [authPanel, appPanel, pendingPanel, adminPanel].forEach(el => el.style.display = el === element ? "block" : "none");
-  }
-  function requireBackend() {
-    if (!sb) {
-      message("Para ativar o cadastro e o login, configure a URL e a chave pública do seu projeto Supabase no arquivo supabase-config.js e execute o arquivo supabase/schema.sql no SQL Editor do Supabase.", "error");
-      return false;
-    }
-    return true;
-  }
-  document.getElementById("loginTab").addEventListener("click", () => setAuthMode("login"));
-  document.getElementById("signupTab").addEventListener("click", () => setAuthMode("signup"));
-  document.getElementById("signupType").addEventListener("change", e => {
-    document.getElementById("vehicleField").hidden = e.target.value !== "driver";
-  });
-  document.getElementById("forgotPassword").addEventListener("click", async () => {
-    if (!requireBackend()) return;
-    const email = document.getElementById("loginEmail").value.trim();
-    if (!email) return message("Digite seu e-mail no campo acima para receber o link de recuperação.", "error");
-    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
-    if (error) return message(error.message, "error");
-    message("Enviamos um link de recuperação para o e-mail informado. Verifique também a caixa de spam.", "success");
-  });
-  loginForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    if (!requireBackend()) return;
-    const button = loginForm.querySelector('button[type="submit"]');
-    button.disabled = true; button.textContent = "Entrando...";
-    const { error } = await sb.auth.signInWithPassword({
-      email: document.getElementById("loginEmail").value.trim(),
-      password: document.getElementById("loginPassword").value
-    });
-    button.disabled = false; button.textContent = "Entrar na conta";
-    if (error) return message(error.message, "error");
-    await loadAccount();
-  });
-  signupForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    if (!requireBackend()) return;
-    const button = signupForm.querySelector('button[type="submit"]');
-    button.disabled = true; button.textContent = "Criando conta...";
-    const kind = document.getElementById("signupType").value;
-    const { data, error } = await sb.auth.signUp({
-      email: document.getElementById("signupEmail").value.trim(),
-      password: document.getElementById("signupPassword").value,
-      options: {
-        emailRedirectTo: window.location.origin + window.location.pathname,
-        data: {
-          full_name: document.getElementById("signupName").value.trim(),
-          phone: document.getElementById("signupPhone").value.trim(),
-          account_type: kind,
-          vehicle_info: kind === "driver" ? document.getElementById("vehicleInfo").value.trim() : ""
-        }
-      }
-    });
-    button.disabled = false; button.textContent = "Criar minha conta";
-    if (error) return message(error.message, "error");
-    if (data.session) {
-      message("Conta criada com sucesso. Carregando seu perfil...", "success");
-      await loadAccount();
-    } else {
-      setAuthMode("login");
-      message("Cadastro enviado! Confira seu e-mail e confirme o endereço antes de entrar.", "success");
-    }
-  });
-  recoveryForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    if (!requireBackend()) return;
-    const password = document.getElementById("newPassword").value;
-    const { error } = await sb.auth.updateUser({ password });
-    if (error) return message(error.message, "error");
-    setAuthMode("login");
-    message("Senha atualizada. Entre usando sua nova senha.", "success");
-  });
-  document.getElementById("logoutButton").addEventListener("click", async () => {
-    if (!sb) return;
-    const { error } = await sb.auth.signOut();
-    if (error) return message(error.message, "error");
-    activeUser = null;
-    accountBar.style.display = "none";
-    headerStatus.textContent = "Acesse sua conta";
-    showOnly(authPanel); setAuthMode("login");
-    message("Você saiu da sua conta.", "success");
-  });
-
-  async function loadAccount() {
-    if (!sb) return;
-    const { data: userData, error: userError } = await sb.auth.getUser();
-    if (userError || !userData.user) {
-      showOnly(authPanel); accountBar.style.display = "none";
-      return message("Não foi possível validar sua sessão. Entre novamente.", "error");
-    }
-    activeUser = userData.user;
-    const { data: profile, error } = await sb.from("profiles")
-      .select("id,full_name,email,phone,account_type,driver_status,vehicle_info")
-      .eq("id", activeUser.id).single();
-    if (error || !profile) {
-      showOnly(authPanel);
-      return message("Sua conta foi autenticada, mas o perfil não foi encontrado. Confira se o arquivo supabase/schema.sql foi executado sem erros.", "error");
-    }
-    authPanel.style.display = "none";
-    accountBar.style.display = "flex";
-    document.getElementById("accountName").textContent = profile.full_name || activeUser.email;
-    document.getElementById("accountDetail").textContent = (profile.account_type === "driver" ? "Motorista" : "Passageiro") + " · " + activeUser.email;
-    headerStatus.textContent = "Conta conectada";
-    if (activeUser.app_metadata && activeUser.app_metadata.role === "admin") {
-      showOnly(adminPanel); await loadPendingDrivers(); return;
-    }
-    if (profile.account_type === "driver") {
-      if (profile.driver_status !== "approved") {
-        showOnly(pendingPanel);
-        pendingPanel.querySelector("h2").textContent = profile.driver_status === "rejected" ? "Cadastro não aprovado" : "Cadastro recebido";
-        pendingPanel.querySelector("p").textContent = profile.driver_status === "rejected"
-          ? "Seu cadastro de motorista não foi aprovado. Entre em contato com o suporte para entender como regularizar as informações."
-          : "Seu cadastro de motorista está pendente de análise. Você poderá acessar a área de corridas depois que um administrador aprovar seu cadastro.";
-        return;
-      }
-      showOnly(appPanel);
-      document.getElementById("passengerTab").style.display = "none";
-      document.getElementById("driverTab").style.display = "block";
-      switchTab(true);
-    } else {
-      showOnly(appPanel);
-      document.getElementById("passengerTab").style.display = "block";
-      document.getElementById("driverTab").style.display = "none";
-      switchTab(false);
-    }
-  }
-
-  async function loadPendingDrivers() {
-    const list = document.getElementById("pendingDriversList");
-    list.innerHTML = '<div class="empty">Carregando cadastros...</div>';
-    const { data, error } = await sb.from("profiles")
-      .select("id,full_name,email,phone,vehicle_info,created_at")
-      .eq("account_type", "driver").eq("driver_status", "pending")
-      .order("created_at", { ascending: true });
-    if (error) {
-      list.innerHTML = '<div class="empty">Não foi possível carregar a lista. Verifique as políticas RLS e a configuração de administrador.</div>';
-      return;
-    }
-    if (!data || data.length === 0) {
-      list.innerHTML = '<div class="empty">Nenhum cadastro pendente no momento.</div>';
-      return;
-    }
-    list.innerHTML = data.map(driver => `
-      <article class="admin-driver">
-        <div><strong>${escapeHtml(driver.full_name)}</strong><div class="muted-line">${escapeHtml(driver.email)} · ${escapeHtml(driver.phone || "Sem telefone")}</div><div class="muted-line">Veículo: ${escapeHtml(driver.vehicle_info || "Não informado")}</div></div>
-        <div class="admin-actions"><button class="primary" data-driver="${driver.id}" data-status="approved">Aprovar</button><button class="danger" data-driver="${driver.id}" data-status="rejected">Rejeitar</button></div>
-      </article>`).join("");
-    list.querySelectorAll("button[data-driver]").forEach(button => button.addEventListener("click", async () => {
-      button.disabled = true;
-      const { error: updateError } = await sb.rpc("set_driver_status", {
-        p_driver_id: button.dataset.driver,
-        p_status: button.dataset.status
-      });
-      if (updateError) {
-        message("Não foi possível atualizar o cadastro: " + updateError.message, "error");
-        button.disabled = false; return;
-      }
-      message(button.dataset.status === "approved" ? "Motorista aprovado." : "Cadastro de motorista rejeitado.", "success");
-      await loadPendingDrivers();
-    }));
-  }
-  document.getElementById("refreshDrivers").addEventListener("click", loadPendingDrivers);
-  if (window.location.hash.includes("type=recovery")) setAuthMode("recovery");
-  if (!sb) {
-    message("Backend ainda não configurado. Preencha supabase-config.js e execute supabase/schema.sql para ativar contas, login, aprovação de motoristas e recuperação de senha.", "error");
-  } else {
-    sb.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setAuthMode("recovery");
-      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-        Promise.resolve().then(() => loadAccount());
-      }
-    });
-    sb.auth.getSession().then(({ data }) => {
-      if (data.session) loadAccount();
-      else { showOnly(authPanel); setAuthMode(window.location.hash.includes("type=recovery") ? "recovery" : "login"); }
-    });
-  }
+(()=>{
+const cfg=window.ALAGOAS_SUPABASE_CONFIG||{};const sb=window.supabase?.createClient(cfg.url,cfg.anonKey);
+const $=id=>document.getElementById(id);let user=null,profile=null;
+const states=[["AL","Alagoas"],["PE","Pernambuco"],["SE","Sergipe"],["BA","Bahia"],["PB","Paraíba"],["RN","Rio Grande do Norte"],["CE","Ceará"],["PI","Piauí"],["MA","Maranhão"],["TO","Tocantins"],["GO","Goiás"],["DF","Distrito Federal"],["MG","Minas Gerais"],["ES","Espírito Santo"],["RJ","Rio de Janeiro"],["SP","São Paulo"],["PR","Paraná"],["SC","Santa Catarina"],["RS","Rio Grande do Sul"],["PA","Pará"],["AM","Amazonas"],["AC","Acre"],["RO","Rondônia"],["RR","Roraima"],["AP","Amapá"],["MT","Mato Grosso"],["MS","Mato Grosso do Sul"]];
+["originState","destinationState","pOriginState","pDestinationState"].forEach(id=>$(id).innerHTML=states.map(s=>'<option value="'+s[0]+'">'+s[0]+' — '+s[1]+'</option>').join(''));
+function msg(el,text,type=""){el.className="message "+type;el.textContent=text}
+function authMode(signup){$("loginForm").classList.toggle("hide",signup);$("signupForm").classList.toggle("hide",!signup);$("loginTab").classList.toggle("active",!signup);$("signupTab").classList.toggle("active",signup);$("authTitle").textContent=signup?"Criar sua conta":"Entrar na plataforma"}
+$("loginTab").onclick=()=>authMode(false);$("signupTab").onclick=()=>authMode(true);
+$("role").onchange=()=>$("vehicleField").classList.toggle("hide",$("role").value!=="driver");
+$("loginForm").onsubmit=async e=>{e.preventDefault();const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)msg($("authMessage"),error.message,"error");else await load()};
+$("signupForm").onsubmit=async e=>{e.preventDefault();const role=$("role").value;const {data,error}=await sb.auth.signUp({email:$("newEmail").value.trim(),password:$("newPassword").value,options:{emailRedirectTo:location.href.split("#")[0],data:{full_name:$("name").value.trim(),phone:$("phone").value.trim(),role,vehicle_info:$("vehicle").value.trim()}}});if(error)msg($("authMessage"),error.message,"error");else if(data.session)await load();else msg($("authMessage"),"Cadastro enviado. Confirme seu e-mail antes de entrar.","success")};
+$("logout").onclick=async()=>{await sb.auth.signOut();user=null;profile=null;showLoggedOut()};
+function showLoggedOut(){$("auth").classList.remove("hide");$("workspace").classList.add("hide");$("topStatus").textContent="Caronas entre estados"}
+async function load(){const {data:{user:u}}=await sb.auth.getUser();if(!u){showLoggedOut();return}user=u;const {data:p,error}=await sb.from("profiles").select("id,full_name,role,role_requested,driver_status,vehicle_info").eq("id",u.id).single();if(error){msg($("authMessage"),"Conta autenticada, mas não foi possível carregar o perfil: "+error.message,"error");return}profile=p;$("auth").classList.add("hide");$("workspace").classList.remove("hide");$("welcome").textContent="Olá, "+(p.full_name||u.email);$("accountInfo").textContent=p.role==="driver"?"Motorista aprovado":"Passageiro";$("topStatus").textContent="Conectado";const approved=p.role==="driver"&&p.driver_status==="approved";$("pending").classList.toggle("hide",p.role_requested==="driver"&&!approved);$("appArea").classList.toggle("hide",p.role_requested==="driver"&&!approved);$("publishTab").classList.toggle("hide",!approved);$("myTab").classList.remove("hide");await loadMy()};
+function tab(which){["search","publish","my"].forEach(k=>{$(k+"View").classList.toggle("hide",k!==which);$(k+"Tab").classList.toggle("active",k===which)});if(which==="my")loadMy()}
+$("searchTab").onclick=()=>tab("search");$("publishTab").onclick=()=>tab("publish");$("myTab").onclick=()=>tab("my");
+$("searchForm").onsubmit=async e=>{e.preventDefault();const q=sb.from("ride_offers").select("id,driver_id,driver_name,origin_city,origin_state,destination_city,destination_state,departure_at,seats_available,price_per_seat,vehicle_description,notes,status").eq("status","published").gte("seats_available",Number($("seats").value)).ilike("origin_city",$("origin").value.trim()).ilike("destination_city",$("destination").value.trim()).eq("origin_state",$("originState").value).eq("destination_state",$("destinationState").value).gte("departure_at",new Date($("travelDate").value+"T00:00:00").toISOString()).lt("departure_at",new Date(new Date($("travelDate").value+"T00:00:00").getTime()+86400000).toISOString()).order("departure_at");const {data,error}=await q;if(error){$("results").innerHTML='<div class="empty">Erro ao pesquisar: '+esc(error.message)+'</div>';return}renderOffers(data||[])};
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderOffers(rows){const el=$("results");if(!rows.length){el.innerHTML='<div class="empty">Nenhuma carona encontrada para esses filtros.</div>';return}el.innerHTML=rows.map(r=>'<article class="ride"><span class="tag">'+r.seats_available+' assento(s)</span><h3>'+esc(r.origin_city)+' ('+r.origin_state+') → '+esc(r.destination_city)+' ('+r.destination_state+')</h3><div class="price">R$ '+Number(r.price_per_seat).toFixed(2).replace(".",",")+' <small class="muted">/ assento</small></div><p>Motorista: '+esc(r.driver_name)+'<br>'+new Date(r.departure_at).toLocaleString("pt-BR")+'<br>'+esc(r.vehicle_description||"Veículo não informado")+'<br>'+esc(r.notes||"Sem observações")+'</p><button class="btn" data-book="'+r.id+'">Reservar</button></article>').join("");el.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>reserve(b.dataset.book))};
+async function reserve(id){const seats=Number($("seats").value);const note=prompt("Observação para o motorista (opcional):")||"";const {data:bookingId,error}=await sb.rpc("reserve_ride",{p_offer_id:id,p_seats:seats,p_note:note});if(error){alert(error.message);return}const method=prompt("Escolha o pagamento: digite PIX ou CARTAO","PIX");if(!method||!["PIX","CARTAO","CARTÃO"].includes(method.toUpperCase())){alert("Reserva criada, mas o pagamento ainda não foi iniciado. A reserva fica pendente.");await loadMy();return}const {data,error:payError}=await sb.functions.invoke("create-checkout",{body:{booking_id:bookingId,payment_method:method.toUpperCase().startsWith("PIX")?"pix":"card"}});if(payError||!data?.checkout_url){alert("Reserva criada, mas o checkout não está configurado: "+(data?.error||payError?.message||"Tente novamente mais tarde."));await loadMy();return}location.href=data.checkout_url}
+$("publishForm").onsubmit=async e=>{e.preventDefault();const d=new Date($("departure").value);if(d<=new Date()){msg($("publishMessage"),"Escolha uma data futura.","error");return}const {error}=await sb.from("ride_offers").insert({driver_id:user.id,driver_name:profile.full_name||user.email,origin_city:$("pOrigin").value.trim(),origin_state:$("pOriginState").value, destination_city:$("pDestination").value.trim(),destination_state:$("pDestinationState").value,departure_at:d.toISOString(),seats_total:Number($("pSeats").value),seats_available:Number($("pSeats").value),price_per_seat:Number($("price").value),vehicle_description:$("pVehicle").value.trim()||profile.vehicle_info,notes:$("notes").value.trim()});if(error)msg($("publishMessage"),error.message,"error");else{msg($("publishMessage"),"Carona publicada com sucesso!","success");e.target.reset()}};
+async function loadMy(){const {data:offers}=await sb.from("ride_offers").select("id,origin_city,origin_state,destination_city,destination_state,departure_at,seats_available,price_per_seat,status").eq("driver_id",user.id).order("departure_at",{ascending:false});const {data:books}=await sb.from("bookings").select("id,ride_offer_id,seats,total_amount,status,created_at,ride_offers(origin_city,origin_state,destination_city,destination_state,departure_at)").eq("passenger_id",user.id).order("created_at",{ascending:false});let html=(offers||[]).map(o=>'<article class="ride"><span class="tag">Minha carona · '+esc(o.status)+'</span><h3>'+esc(o.origin_city)+' → '+esc(o.destination_city)+'</h3><p>'+new Date(o.departure_at).toLocaleString("pt-BR")+' · '+o.seats_available+' assento(s) livres</p></article>');html=html.concat((books||[]).map(b=>'<article class="ride"><span class="tag">Reserva · '+esc(b.status)+'</span><h3>'+esc(b.ride_offers?.origin_city||"Origem")+' → '+esc(b.ride_offers?.destination_city||"Destino")+'</h3><p>'+b.seats+' assento(s) · R$ '+Number(b.total_amount).toFixed(2).replace(".",",")+'</p></article>'));$("myBookings").innerHTML=html.length?html.join(""):'<div class="empty">Você ainda não publicou ou reservou caronas.</div>'}
+sb.auth.onAuthStateChange((event,session)=>{if(session)queueMicrotask(load);else if(event==="SIGNED_OUT")showLoggedOut()});sb.auth.getSession().then(({data})=>{if(data.session)load()});
 })();
-</script></body></html>
+</script>
+</body></html>
